@@ -9,22 +9,18 @@ public class VOWCore {
     private static IFunctionProvider functionProvider;
     private static boolean ready = false;
 
+    private static File rootFolder;
+
     /**
      * Initialize VOWCore
      * Run in the mod's constructor
      * @param provider Function provider which is used
-     * @throws IllegalArgumentException if provider or root is null
+     * @param root root of VOW folder
      */
     public static void init(IFunctionProvider provider, File root) {
-        if (provider == null) {
-            throw new IllegalArgumentException("Provider should not be null. So why is it null?");
-        }
-        if (root == null) {
-            throw new IllegalArgumentException("Root should not be null. So why is it null?");
-        }
 
         functionProvider = provider;
-
+        rootFolder = root;
 
 
         ready = true;
@@ -32,16 +28,18 @@ public class VOWCore {
 
 
     /**
-     * Run this method every tick the player is in a world
-     * @throws IllegalStateException if init was not run before
+     * Run this method every tick the player is in a world.
+     * <br><br>
+     * This method will crash if run before init()
      */
-    public static void tick() {
-        if (!ready) {
-            throw new IllegalStateException("tick() method was run before init()");
-        }
+    public static void tick() { // position based sounds and etc
 
 
 
+    }
+
+    public static File getRootFolder() {
+        return rootFolder;
     }
 
     public static IFunctionProvider getFunctionProvider() {
