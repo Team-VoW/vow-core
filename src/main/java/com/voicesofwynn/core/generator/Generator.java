@@ -1,7 +1,6 @@
 package com.voicesofwynn.core.generator;
 
 import java.io.File;
-import java.util.List;
 
 public class Generator {
 
