@@ -26,6 +26,17 @@ public class ByteUtils {
         return ByteBuffer.wrap(b).getInt();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static float readFloat(FileInputStream input) throws IOException {
+        byte[] b = new byte[4];
+        input.read(b);
+        return ByteBuffer.wrap(b).getFloat();
+    }
+
+    public static byte[] encodeFloat(float f) {
+        return ByteBuffer.allocate(4).putFloat(f).array();
+    }
+
     public static byte[] encodeString (String str) {
 
         byte[] sb = str.getBytes();
