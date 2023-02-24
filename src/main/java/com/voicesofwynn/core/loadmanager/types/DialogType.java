@@ -4,6 +4,7 @@ import com.voicesofwynn.core.loadmanager.RegisterType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Map;
 
 public class DialogType implements RegisterType {
     @Override
@@ -12,7 +13,7 @@ public class DialogType implements RegisterType {
     }
 
     @Override
-    public void write(FileOutputStream writer, Object section) {
+    public void write(FileOutputStream writer, Object section, Map<String, Object> vars) {
     }
 
     @Override
