@@ -4,6 +4,9 @@ import java.io.File;
 
 public class Generator {
 
+    public static void main(String[] args) {
+
+    }
 
     /**
      * The generate function
@@ -15,7 +18,6 @@ public class Generator {
      * @param out folder with output destination
      */
     public static void generate(File in, File out) {
-
 
     }
 

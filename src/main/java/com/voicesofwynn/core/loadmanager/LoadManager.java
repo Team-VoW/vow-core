@@ -13,9 +13,7 @@ import java.util.Map;
 public class LoadManager {
 
     private static LoadManager instance;
-    private Map<String, RegisterType> register;
-
-    public static final String VERSION = "0.1";
+    private final Map<String, RegisterType> register;
 
     public LoadManager () {
         register = new HashMap<>();
@@ -29,18 +27,14 @@ public class LoadManager {
         Map<String, Object> fl = yaml.load(Files.newInputStream(in.toPath()));
         FileOutputStream output = new FileOutputStream(out);
 
-        Map<String, Object> variables = new HashMap<>();
+        WriteInstanceValues values = new WriteInstanceValues();
 
-        for (Map.Entry<String, Object> e : fl.entrySet()) {
-            if (e.getValue() instanceof Map) {
-                RegisterType type = register.get(e.getKey());
-                if (type == null) {
-                    throw new RuntimeException("Unknown type: " + e.getKey());
-                }
-                type.write(output, e.getValue(), variables);
-            } else {
-                variables.put(e.getKey(), e.getValue());
+        for (Map.Entry<String, Object> entry : fl.entrySet()) {
+            RegisterType type = register.get(entry.getKey());
+            if (type == null) {
+                throw new RuntimeException("Unknown type: " + entry.getKey());
             }
+            type.write(output, entry.getValue(), values);
         }
     }
 
