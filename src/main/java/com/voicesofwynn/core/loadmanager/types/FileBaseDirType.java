@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-public class FileBaseDir implements RegisterType {
+public class FileBaseDirType implements RegisterType {
 
     @Override
     public void load(FileInputStream reader) {

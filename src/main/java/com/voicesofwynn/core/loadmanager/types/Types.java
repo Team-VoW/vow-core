@@ -6,7 +6,7 @@ public class Types {
 
     public static void init(LoadManager m) {
         m.register(new DialogType());
-        m.register(new FileBaseDir());
+        m.register(new FileBaseDirType());
     }
 
 }
