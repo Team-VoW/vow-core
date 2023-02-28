@@ -2,7 +2,6 @@ package com.voicesofwynn.core.loadmanager.types;
 
 import com.voicesofwynn.core.loadmanager.RegisterType;
 import com.voicesofwynn.core.loadmanager.WriteInstanceValues;
-import com.voicesofwynn.core.utils.VOWLog;
 
 import java.io.File;
 import java.io.FileInputStream;
