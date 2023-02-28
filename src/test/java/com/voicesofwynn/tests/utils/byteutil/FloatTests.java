@@ -10,7 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class floatTests {
+public class FloatTests {
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     @Test

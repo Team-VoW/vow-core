@@ -5,7 +5,6 @@ import com.voicesofwynn.core.loadmanager.WriteInstanceValues;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Map;
 
 public class DialogType implements RegisterType {
     @Override

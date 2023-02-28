@@ -22,12 +22,21 @@ public class LoadManager {
         Types.init(this);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void build(File in, File out) throws IOException {
         Yaml yaml = new Yaml();
         Map<String, Object> fl = yaml.load(Files.newInputStream(in.toPath()));
+        if (out.exists()) {
+            out.delete();
+        }
+        out.getParentFile().mkdirs();
+        out.createNewFile();
         FileOutputStream output = new FileOutputStream(out);
 
         WriteInstanceValues values = new WriteInstanceValues();
+        values.filePath = in.getPath();
+        values.file = in;
+        values.baseSoundDirectory = in.getParentFile();
 
         for (Map.Entry<String, Object> entry : fl.entrySet()) {
             RegisterType type = register.get(entry.getKey());
