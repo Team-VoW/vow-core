@@ -31,6 +31,11 @@ public class FileBaseDirType implements RegisterType {
     }
 
     @Override
+    public boolean isWriteTimeOnly() {
+        return true;
+    }
+
+    @Override
     public String getName() {
         return "file-base-dir";
     }

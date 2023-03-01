@@ -18,6 +18,11 @@ public class DialogType implements RegisterType {
     }
 
     @Override
+    public boolean isWriteTimeOnly() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "dialog";
     }

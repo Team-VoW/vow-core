@@ -1,11 +1,10 @@
 package com.voicesofwynn.core.loadmanager;
 
 import com.voicesofwynn.core.loadmanager.types.Types;
+import com.voicesofwynn.core.utils.ByteUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +42,25 @@ public class LoadManager {
             if (type == null) {
                 throw new RuntimeException("Unknown type: " + entry.getKey());
             }
+            if (!type.isWriteTimeOnly()) {
+                output.write(ByteUtils.encodeString(type.getName()));
+            }
             type.write(output, entry.getValue(), values);
         }
+        output.close();
+    }
+
+    public void load(File file) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(file);
+        while (fileInputStream.available() > 0) {
+            String typeName = ByteUtils.readString(fileInputStream);
+            RegisterType type = register.get(typeName);
+            if (type == null) {
+                throw new RuntimeException("Unknown type: " + typeName);
+            }
+            type.load(fileInputStream);
+        }
+        fileInputStream.close();
     }
 
     public void register(RegisterType type) {
