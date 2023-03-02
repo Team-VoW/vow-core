@@ -9,10 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-public class DialogType implements RegisterType {
+public class DialogueType implements RegisterType {
     @Override
-    public void load(FileInputStream reader) {
-
+    public void load(FileInputStream reader) throws IOException {
+        int amountOfDialogs = ByteUtils.readInteger(reader);
     }
 
     @Override
@@ -28,6 +28,7 @@ public class DialogType implements RegisterType {
                 String key = (String) dialog.getKey();
 
 
+
             }
         } else {
             throw new RuntimeException("In file " + value.file + " the dialog(s) don't have dialogs and instead have a " + section.getClass().getName());
@@ -41,6 +42,6 @@ public class DialogType implements RegisterType {
 
     @Override
     public String getName() {
-        return "dialog";
+        return "dialogues";
     }
 }

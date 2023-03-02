@@ -6,24 +6,24 @@ import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DialogRegister implements ChatMessageEvent.messageListener {
+public class DialogueRegister implements ChatMessageEvent.messageListener {
 
     public static class Dialog {
         String line;
         VOWLocationProvider location;
     }
 
-    public static DialogRegister instance;
+    public static DialogueRegister instance;
 
     private final Map<String, Dialog> dialogs;
 
-    public DialogRegister () {
+    public DialogueRegister() {
         instance = this;
         dialogs = new HashMap<>();
         ChatMessageEvent.register(this);
     }
 
-    public static DialogRegister getInstance() {
+    public static DialogueRegister getInstance() {
         return instance;
     }
 
