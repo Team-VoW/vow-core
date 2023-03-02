@@ -12,6 +12,10 @@ public class ChatMessageEvent {
         }
     }
 
+    public static void register(messageListener listener) {
+        listeners.add(listener);
+    }
+
     public interface messageListener {
         void message(String str);
     }
