@@ -1,5 +1,6 @@
 package com.voicesofwynn.core.events;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatMessageEvent {
@@ -13,6 +14,10 @@ public class ChatMessageEvent {
     }
 
     public static void register(messageListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<>();
+        }
+
         listeners.add(listener);
     }
 

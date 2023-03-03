@@ -9,8 +9,8 @@ import java.util.Map;
 public class DialogueRegister implements ChatMessageEvent.messageListener {
 
     public static class Dialog {
-        String line;
-        VOWLocationProvider location;
+        public String line;
+        public VOWLocationProvider location;
     }
 
     public static DialogueRegister instance;

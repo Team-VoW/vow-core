@@ -2,6 +2,7 @@ package com.voicesofwynn.core.loadmanager.types;
 
 import com.voicesofwynn.core.loadmanager.RegisterType;
 import com.voicesofwynn.core.loadmanager.WriteInstanceValues;
+import com.voicesofwynn.core.registers.DialogueRegister;
 import com.voicesofwynn.core.utils.ByteUtils;
 
 import java.io.FileInputStream;
@@ -13,6 +14,20 @@ public class DialogueType implements RegisterType {
     @Override
     public void load(FileInputStream reader) throws IOException {
         int amountOfDialogs = ByteUtils.readInteger(reader);
+
+        DialogueRegister register = DialogueRegister.getInstance();
+        if (register == null) {
+            register = new DialogueRegister();
+        }
+
+        for (int i = 0 ; i < amountOfDialogs ; i++) {
+            String text = ByteUtils.readString(reader);
+            DialogueRegister.Dialog dialog = new DialogueRegister.Dialog();
+            dialog.line = text;
+
+            register.register(dialog);
+        }
+
     }
 
     @Override
@@ -26,6 +41,8 @@ public class DialogueType implements RegisterType {
                     throw new RuntimeException("In file " + value.file + " the dialogs are messed up?! What?");
                 }
                 String key = (String) dialog.getKey();
+
+                writer.write(ByteUtils.encodeString(key));
 
 
 
@@ -42,6 +59,6 @@ public class DialogueType implements RegisterType {
 
     @Override
     public String getName() {
-        return "dialogues";
+        return "dialogue";
     }
 }
