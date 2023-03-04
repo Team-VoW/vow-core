@@ -8,7 +8,6 @@ import com.voicesofwynn.core.registers.DialogueRegister;
 import com.voicesofwynn.core.utils.ByteUtils;
 import com.voicesofwynn.core.utils.LineUtils;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
