@@ -56,4 +56,11 @@ public class ByteUtils {
         return new String(st);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static byte readByte(FileInputStream input) throws IOException {
+        byte[] st = new byte[1];
+        input.read(st);
+        return st[0];
+    }
+
 }

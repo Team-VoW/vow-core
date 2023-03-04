@@ -1,6 +1,7 @@
 package com.voicesofwynn.core.registers;
 
 import com.voicesofwynn.core.events.ChatMessageEvent;
+import com.voicesofwynn.core.wrappers.FilePathProvider;
 import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 
 import java.util.HashMap;
@@ -11,6 +12,8 @@ public class DialogueRegister implements ChatMessageEvent.messageListener {
     public static class Dialog {
         public String line;
         public VOWLocationProvider location;
+
+        public FilePathProvider file;
     }
 
     public static DialogueRegister instance;

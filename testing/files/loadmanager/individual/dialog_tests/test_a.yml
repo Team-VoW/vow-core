@@ -3,5 +3,5 @@ file-base-dir: "./sounds/"
 dialogue:
   "[1/2] Caravan Driver: Agh!": "empty_file.ogg"
   "[1/4] Caravan Driver: I swear I hit this same dang boulder everytime I make this trip.":
-    sound: "empty_file.ogg"
+    file: "empty_file.ogg"
     location: "10, 10, 10"
