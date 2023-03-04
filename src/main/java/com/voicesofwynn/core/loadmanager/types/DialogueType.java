@@ -60,21 +60,17 @@ public class DialogueType implements RegisterType {
                     Set<String> used = new HashSet<>();
                     Map<?, ?> parameters = (Map<?, ?>)dialog.getValue();
 
-                    String file = (String)parameters.get("file");
-                    if (file == null) {
-                        throw new RuntimeException("In file " + value.file + " the dialogue " + dialog.getKey() + " has a non existent file.");
-                    }
                     FileLocationSubType.writeFileLocation(out, dialog.getValue(), value, (String) dialog.getKey());
                     used.add("file");
-                    out.write(ByteUtils.encodeString(file));
 
                     Object location = parameters.get("location");
                     if (location == null) {
                         String npcName = LineUtils.npcNameFromLine((String)dialog.getKey());
                         LocationSubType.writeNpcNameLocation(out, npcName);
+                    } else {
+                        LocationSubType.writeLocation(out, location);
                     }
                     used.add("location");
-                    LocationSubType.writeLocation(out, location);
 
                     for (Object key : parameters.keySet()) {
                         if (!(key instanceof String)) {
