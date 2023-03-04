@@ -23,8 +23,10 @@ public class FileLocationSubType {
 
             out.write(0);
             out.write(ByteUtils.encodeString((String) part));
+        } else {
+
+            out.write(255);
         }
-        out.write(127);
     }
 
     public static FilePathProvider readFileLocation(FileInputStream in) throws IOException {

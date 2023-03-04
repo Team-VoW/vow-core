@@ -8,8 +8,7 @@ import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class LocationSubType {
 
@@ -31,10 +30,52 @@ public class LocationSubType {
                 if (coordinates.size() != 3) {
                     throw new RuntimeException("In " + context + " the list of cords [" + loc + "] has " + coordinates.size() + " coordinates instead of 3.");
                 }
+                out.write(0);
                 for (float f : coordinates) {
                     out.write(ByteUtils.encodeFloat(f));
                 }
             }
+        } else if (part instanceof Map) {
+            Map<?, ?> parameters = ((Map<?, ?>) part);
+            Set<String> used = new HashSet<>();
+
+            if (parameters.get("npc") != null) {
+                if (!(parameters.get("npc") instanceof String)) {
+                    throw new RuntimeException("In " + context + "'s location npc is not a String, it's a " + parameters.get("npc").getClass().getName());
+                }
+                out.write(1);
+                out.write(ByteUtils.encodeString((String) parameters.get("npc")));
+                used.add("npc");
+            } else {
+                Object xO = parameters.get("x");
+                Object yO = parameters.get("y");
+                Object zO = parameters.get("z");
+
+                float x, y, z;
+                try {
+                    x = Float.parseFloat(xO.toString());
+                    y = Float.parseFloat(yO.toString());
+                    z = Float.parseFloat(zO.toString());
+                } catch (Exception e) {
+                    throw new RuntimeException("In " + context + "'s location XYZ have a bad type");
+                }
+
+                out.write(0);
+                out.write(ByteUtils.encodeFloat(x));
+                out.write(ByteUtils.encodeFloat(y));
+                out.write(ByteUtils.encodeFloat(z));
+                used.add("x");
+                used.add("y");
+                used.add("z");
+            }
+
+            for (Object key : parameters.keySet()) {
+                if (!used.contains((String)key)) {
+                    throw new RuntimeException("In " + context + "'s location has the unused parameter " + key);
+                }
+            }
+        } else {
+            throw new RuntimeException("In " + context + " the coordinates wrong");
 
         }
     }

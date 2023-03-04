@@ -10,10 +10,10 @@ dialogue:
   "[3/3] Soldier: Hey, you three! Come over here.":
     file: "empty_file.ogg"
     location:
-      name: "Bob The Soldier"
+      npc: "Bob The Soldier"
   "[2/4] Soldier: There's a bit of trouble up ahead. You can't expect to get out of here alive if you aren't prepared.":
     file: "empty_file.ogg"
     location:
-      x: 10
-      y: -10
+      x: 10.0
+      y: -10.0
       z: -25

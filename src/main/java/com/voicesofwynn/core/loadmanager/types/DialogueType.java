@@ -60,7 +60,7 @@ public class DialogueType implements RegisterType {
                     Set<String> used = new HashSet<>();
                     Map<?, ?> parameters = (Map<?, ?>)dialog.getValue();
 
-                    FileLocationSubType.writeFileLocation(out, dialog.getValue(), value, (String) dialog.getKey());
+                    FileLocationSubType.writeFileLocation(out, parameters.get("file"), value, (String) dialog.getKey());
                     used.add("file");
 
                     Object location = parameters.get("location");
