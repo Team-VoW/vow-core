@@ -18,8 +18,6 @@ public class DialogTypeTest {
         loadManager.build(new File("files/loadmanager/individual/dialog_tests/test_a.yml"),
                 testOut);
 
-
-
         LoadManager.getInstance().load(testOut);
 
     }

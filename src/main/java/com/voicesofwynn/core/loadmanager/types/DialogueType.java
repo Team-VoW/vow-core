@@ -68,7 +68,7 @@ public class DialogueType implements RegisterType {
                         String npcName = LineUtils.npcNameFromLine((String)dialog.getKey());
                         LocationSubType.writeNpcNameLocation(out, npcName);
                     } else {
-                        LocationSubType.writeLocation(out, location);
+                        LocationSubType.writeLocation(out, location, "file " + value.filePath + " dialogue " + dialog.getKey());
                     }
                     used.add("location");
 

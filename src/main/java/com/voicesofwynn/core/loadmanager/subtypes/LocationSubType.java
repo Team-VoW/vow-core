@@ -8,18 +8,42 @@ import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationSubType {
 
-    public static void writeLocation(FileOutputStream out, Object part) {
+    public static void writeLocation(FileOutputStream out, Object part, String context) throws IOException {
+        if (part instanceof String) {
+            String loc = (String)part;
 
+            if (loc.equals("player")) {
+                out.write(2);
+            } else {
+                String[] pos = loc.split("[ ,|/\\\\]"); // yes regex
+
+                List<Float> coordinates = new ArrayList<>();
+                for (String s : pos) {
+                    try {
+                        coordinates.add(Float.parseFloat(s));
+                    } catch (Exception ignored) {}
+                }
+                if (coordinates.size() != 3) {
+                    throw new RuntimeException("In " + context + " the list of cords [" + loc + "] has " + coordinates.size() + " coordinates instead of 3.");
+                }
+                for (float f : coordinates) {
+                    out.write(ByteUtils.encodeFloat(f));
+                }
+            }
+
+        }
     }
 
     /**
      * in case of name being null it will instead write player position based location
      */
     public static void writeNpcNameLocation(FileOutputStream out, String name) throws IOException {
-        if (name ==  null) {
+        if (name == null) {
             out.write(2);
             return;
         }
