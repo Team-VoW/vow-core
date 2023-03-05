@@ -14,11 +14,12 @@ public class Generator {
      * Will generate output in the out folder which can be used as a preset source. <p>
      * Requires presets.yml in the in folder.
      *
-     * @param in folder with source
+     * @param base base project folder
+     * @param in the file/dir in
      * @param out folder with output destination
      */
-    public static void generate(File in, File out) {
-
+    public static void generate(File base, File in, File out) {
+        
     }
 
 
