@@ -17,10 +17,14 @@ public class LineUtils {
             return null;
         }
 
-        return line.substring(
+        return prepareName(line.substring(
                 line.indexOf("]"),
                 line.indexOf(":")
-        ).trim().toLowerCase().replaceAll("[^a-z\\d?]", "");
+        ));
+    }
+
+    public static String prepareName(String name) {
+        return name.trim().toLowerCase().replaceAll("[^a-z\\d?]", "");
     }
 
 }

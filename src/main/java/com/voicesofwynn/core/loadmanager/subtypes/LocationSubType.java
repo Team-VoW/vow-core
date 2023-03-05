@@ -2,6 +2,7 @@ package com.voicesofwynn.core.loadmanager.subtypes;
 
 import com.voicesofwynn.core.VOWCore;
 import com.voicesofwynn.core.utils.ByteUtils;
+import com.voicesofwynn.core.utils.LineUtils;
 import com.voicesofwynn.core.wrappers.VOWLocation;
 import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 
@@ -44,7 +45,7 @@ public class LocationSubType {
                     throw new RuntimeException("In " + context + "'s location npc is not a String, it's a " + parameters.get("npc").getClass().getName());
                 }
                 out.write(1);
-                out.write(ByteUtils.encodeString((String) parameters.get("npc")));
+                out.write(ByteUtils.encodeString(LineUtils.prepareName((String) parameters.get("npc"))));
                 used.add("npc");
             } else {
                 Object xO = parameters.get("x");

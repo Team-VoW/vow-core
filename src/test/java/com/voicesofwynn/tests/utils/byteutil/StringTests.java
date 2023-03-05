@@ -43,7 +43,6 @@ public class StringTests {
         FileOutputStream stream = new FileOutputStream(f);
 
         for (String s : testInts) {
-            System.out.println(s);
             stream.write(ByteUtils.encodeString(s));
         }
         stream.close();
