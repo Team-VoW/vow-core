@@ -35,11 +35,16 @@ public class DialogTypeTest {
         assert dialogMap.get(LineUtils.lineFromMessage("[2/4] Soldier: There's a bit of trouble up ahead. You can't expect to get out of here alive if you aren't prepared."))
                 .location.getLocation().equals(new VOWLocation(10, -10, -25));
 
+        assert dialogMap.get(LineUtils.lineFromMessage("[1/4] Caravan Driver: I swear I hit this same dang boulder everytime I make this trip."))
+                .location.getLocation().equals(new VOWLocation(10, 10, 10));
+
         EmptyFunctionProvider provider = new EmptyFunctionProvider() {
             @Override
             public VOWLocation getNpcLocationFromName(String name) {
                 if (LineUtils.prepareName("Bob The Soldier").equals(name)) {
                     return new VOWLocation(-99, -99, -99);
+                } else if (LineUtils.prepareName("Caravan Driver").equals(name)) {
+                    return new VOWLocation(99, -99, -99);
                 }
                 return null;
             }
@@ -49,5 +54,8 @@ public class DialogTypeTest {
 
         assert dialogMap.get(LineUtils.lineFromMessage("[3/3] Soldier: Hey, you three! Come over here."))
                 .location.getLocation().equals(new VOWLocation(-99, -99, -99));
+
+        assert dialogMap.get(LineUtils.lineFromMessage("[3/4] Caravan Driver: It's not that far, it's just a straight path from here."))
+                .location.getLocation().equals(new VOWLocation(99, -99, -99));
     }
 }
