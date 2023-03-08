@@ -4,7 +4,7 @@ dialogue:
   "[1/2] Caravan Driver: Agh!": "empty_file.ogg"
   "[1/4] Caravan Driver: I swear I hit this same dang boulder everytime I make this trip.":
     file: "empty_file.ogg"
-    location: "10 10 10"
+    location: "10, 10, 10"
   "[3/4] Caravan Driver: It's not that far, it's just a straight path from here.":
     file: "empty_file.ogg"
   "[3/3] Soldier: Hey, you three! Come over here.":

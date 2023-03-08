@@ -16,9 +16,9 @@ public class Generator {
      *
      * @param base base project folder
      * @param in the file/dir in
-     * @param out folder with output destination
      */
-    public static void generate(File base, File in, File out) {
+    public static void generate(File base, String in) {
+        File settings = new File(base, "settings.yml");
 
 
     }
