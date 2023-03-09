@@ -35,25 +35,28 @@ public class Generator {
 
         Map<String, Object> settingsInfo;
         if (!settings.isFile()) {
-            VOWLog.warn("Unable to find settings.yml in " + base.getPath() + " using defaults.");
-            settingsInfo = new HashMap<>();
-            settingsInfo.put("in", "src");
-            settingsInfo.put("out", "out");
+            VOWLog.error("Unable to find settings.yml, stopping.");
+            return;
         } else {
             Yaml yaml = new Yaml();
             settingsInfo = yaml.load(Files.newInputStream(settings.toPath()));
             settingsInfo.putIfAbsent("in", "src");
-            settingsInfo.putIfAbsent("out", "out");
+            settingsInfo.putIfAbsent("out", "vow-core-out");
         }
-
 
         if (in == null || in.length == 0) {
             in = new String[] {"."};
+        } else {
+            VOWLog.warn("Make sure to not to use the current build for production.");
         }
 
         File baseOutForFile = new File(base, (String)settingsInfo.get("out"));
         baseOutForFile = new File(baseOutForFile, "src");
         File baseInForFile = new File(base, (String)settingsInfo.get("in"));
+
+        if (baseOutForFile.exists()) {
+            recursivelyDelete(baseOutForFile);
+        }
 
         for (String filePath : in) {
             File file = new File(baseInForFile, filePath);
@@ -68,15 +71,16 @@ public class Generator {
             }
         }
         File baseOutForLists = new File(base, (String)settingsInfo.get("out"));
-        baseOutForLists = new File(baseOutForFile, "lists");
+        baseOutForLists = new File(baseOutForLists, "lists");
         createDirLists(baseOutForFile, baseOutForLists);
 
     }
 
     public static long createDirLists(File folder, File outBase) {
-
-
         CRC32 crc = new CRC32();
+
+        
+
         return crc.getValue();
     }
 
@@ -86,9 +90,18 @@ public class Generator {
                 buildDir(file, new File(outBase, file.getName()));
             } else if (file.exists() && file.getName().endsWith(".yml")) {
                 LoadManager.getInstance().build(file,
-                        new File(outBase, file.getName().replace(".yml", "")));
+                        new File(outBase, file.getName().replace(".yml", ".vow-config")));
             }
         }
+    }
+    public static void recursivelyDelete(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                recursivelyDelete(f);
+            }
+        }
+        dir.delete();
     }
 
 
