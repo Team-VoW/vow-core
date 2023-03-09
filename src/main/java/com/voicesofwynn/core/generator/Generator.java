@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.zip.CRC32;
 
 public class Generator {
 
@@ -24,7 +25,8 @@ public class Generator {
      * Requires presets.yml in the in folder.
      *
      * @param base base project folder
-     * @param in the files/folders to generate (if non, then it will just generate everything)
+     * @param in the files/folders to generate (if non, then it will just generate everything) <br>
+     * in general in parameter should only be specified when you are working with large amount of configs and want to check your config file
      */
     public static void generate(File base, String[] in) throws IOException {
         File settings = new File(base, "settings.yml");
@@ -50,6 +52,7 @@ public class Generator {
         }
 
         File baseOutForFile = new File(base, (String)settingsInfo.get("out"));
+        baseOutForFile = new File(baseOutForFile, "src");
         File baseInForFile = new File(base, (String)settingsInfo.get("in"));
 
         for (String filePath : in) {
@@ -64,6 +67,17 @@ public class Generator {
                 VOWLog.warn("File " + filePath + "not found");
             }
         }
+        File baseOutForLists = new File(base, (String)settingsInfo.get("out"));
+        baseOutForLists = new File(baseOutForFile, "lists");
+        createDirLists(baseOutForFile, baseOutForLists);
+
+    }
+
+    public static long createDirLists(File folder, File outBase) {
+
+
+        CRC32 crc = new CRC32();
+        return crc.getValue();
     }
 
     public static void buildDir(File folder, File outBase) throws IOException {
