@@ -45,6 +45,11 @@ public class Generator {
             in = new String[] {"."};
         }
 
+        for (String filePath : in) {
+            File file = new File(base, filePath);
+            
+        }
+
     }
 
 
