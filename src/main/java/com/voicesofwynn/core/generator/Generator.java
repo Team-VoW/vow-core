@@ -1,10 +1,13 @@
 package com.voicesofwynn.core.generator;
 
 import com.voicesofwynn.core.loadmanager.LoadManager;
+import com.voicesofwynn.core.utils.ByteUtils;
 import com.voicesofwynn.core.utils.VOWLog;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -72,20 +75,42 @@ public class Generator {
         }
         File baseOutForLists = new File(base, (String)settingsInfo.get("out"));
         baseOutForLists = new File(baseOutForLists, "lists");
-        createDirLists(baseOutForFile, baseOutForLists);
+        createDirLists(baseOutForFile, baseOutForLists, "base");
 
     }
 
-    public static long createDirLists(File folder, File outBase) {
-        CRC32 crc = new CRC32();
+    @SuppressWarnings({"ResultOfMethodCallIgnored"})
+    public static long createDirLists(File folder, File out, String path) throws IOException {
+
+        File list = new File(out, path);
+        if (list.exists()) {
+            list.delete();
+        }
+        list.getParentFile().mkdirs();
+        list.createNewFile();
+        FileOutputStream output = new FileOutputStream(out);
 
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
+                if (file.isFile()) {
+                    CRC32 crc = new CRC32();
+                    crc.update(Files.readAllBytes(file.toPath()));
 
+                    output.write(ByteUtils.encodeString(file.getName()));
+                    output.write(0);
+                    output.write(ByteUtils.encodeLong(crc.getValue()));
+                } else if (file.isDirectory()) {
+                    output.write(ByteUtils.encodeString(file.getName()));
+                    output.write(1);
+                    output.write(ByteUtils.encodeLong(createDirLists(file, out, path + "$" + file.getName())));
+                }
             }
         }
+        output.close();
 
+        CRC32 crc = new CRC32();
+        crc.update(Files.readAllBytes(list.toPath()));
         return crc.getValue();
     }
 
