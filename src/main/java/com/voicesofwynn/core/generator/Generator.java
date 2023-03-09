@@ -68,7 +68,7 @@ public class Generator {
                 loadManager.build(file,
                         new File(baseOutForFile, filePath.replace(".yml", "")));
             } else {
-                VOWLog.warn("File " + filePath + "not found");
+                VOWLog.warn("File " + filePath + " not found");
             }
         }
         File baseOutForLists = new File(base, (String)settingsInfo.get("out"));
@@ -86,7 +86,7 @@ public class Generator {
         }
         list.getParentFile().mkdirs();
         list.createNewFile();
-        FileOutputStream output = new FileOutputStream(out);
+        FileOutputStream output = new FileOutputStream(list);
 
         File[] files = folder.listFiles();
         if (files != null) {
@@ -119,6 +119,10 @@ public class Generator {
             } else if (file.exists() && file.getName().endsWith(".yml")) {
                 LoadManager.getInstance().build(file,
                         new File(outBase, file.getName().replace(".yml", ".vow-config")));
+            } else {
+                File out = new File(outBase, file.getName());
+                out.getParentFile().mkdirs();
+                Files.copy(file.toPath(), out.toPath());
             }
         }
     }
