@@ -79,7 +79,12 @@ public class Generator {
     public static long createDirLists(File folder, File outBase) {
         CRC32 crc = new CRC32();
 
-        
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+
+            }
+        }
 
         return crc.getValue();
     }

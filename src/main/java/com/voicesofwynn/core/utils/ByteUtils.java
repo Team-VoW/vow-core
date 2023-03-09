@@ -37,6 +37,10 @@ public class ByteUtils {
         return ByteBuffer.allocate(4).putFloat(f).array();
     }
 
+    public static byte[] encodeLong(long l) {
+        return ByteBuffer.allocate(8).putLong(l).array();
+    }
+
     public static byte[] encodeString (String str) {
 
         byte[] sb = str.getBytes();
@@ -61,6 +65,13 @@ public class ByteUtils {
         byte[] st = new byte[1];
         input.read(st);
         return st[0];
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static long readLong(FileInputStream input) throws IOException {
+        byte[] b = new byte[8];
+        input.read(b);
+        return ByteBuffer.wrap(b).getLong();
     }
 
 }

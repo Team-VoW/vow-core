@@ -10,12 +10,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class IntTests {
+public class LongTests {
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     @Test
     void readWriteTest() throws IOException {
-        int[] testInts = new int[] {
+        long[] testInts = new long[] {
                 1000,
                 -100,
                 Integer.MAX_VALUE,
@@ -23,32 +23,35 @@ public class IntTests {
                 1235982,
                 124192,
                 68535,
-                25367,
-                346734,
-                6354,
                 34634,
                 -3953962,
                 -3252,
                 -125321,
-                -999
+                -999,
+                10000000000L,
+                100000000000L,
+                100000000454550L,
+                -1000004325525550000L,
+                Long.MAX_VALUE,
+                Long.MIN_VALUE
         };
 
-        File f = new File(TestSettings.TEST_DIR, "byteUtils/intTests");
+        File f = new File(TestSettings.TEST_DIR, "byteUtils/longTests");
         f.getParentFile().mkdirs();
         if (f.exists())
             Files.delete(f.toPath());
         Files.createFile(f.toPath());
         FileOutputStream stream = new FileOutputStream(f);
 
-        for (int i : testInts) {
-            stream.write(ByteUtils.encodeInteger(i));
+        for (long i : testInts) {
+            stream.write(ByteUtils.encodeLong(i));
         }
         stream.close();
 
         FileInputStream inp = new FileInputStream(f);
 
-        for (int i : testInts) {
-            assert ByteUtils.readInteger(inp) == i;
+        for (long i : testInts) {
+            assert ByteUtils.readLong(inp) == i;
         }
         inp.close();
 

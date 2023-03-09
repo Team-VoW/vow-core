@@ -71,4 +71,26 @@ public class GenericTests {
 
         inp.close();
     }
+
+    @Test
+    void generalTest3() throws IOException {
+        File f = new File(TestSettings.TEST_DIR, "byteUtils/generalTests3");
+        f.getParentFile().mkdirs();
+        if (f.exists())
+            Files.delete(f.toPath());
+        Files.createFile(f.toPath());
+        FileOutputStream stream = new FileOutputStream(f);
+
+        stream.write(ByteUtils.encodeLong(1025932815L));
+        stream.write(ByteUtils.encodeInteger(1000));
+
+        stream.close();
+
+        FileInputStream inp = new FileInputStream(f);
+
+        assert ByteUtils.readLong(inp) == 1025932815L;
+        assert ByteUtils.readInteger(inp) == 1000;
+
+        inp.close();
+    }
 }
