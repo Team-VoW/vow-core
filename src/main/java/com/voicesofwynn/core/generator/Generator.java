@@ -1,5 +1,6 @@
 package com.voicesofwynn.core.generator;
 
+import com.voicesofwynn.core.loadmanager.LoadManager;
 import com.voicesofwynn.core.utils.VOWLog;
 import org.yaml.snakeyaml.Yaml;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Generator {
 
@@ -27,9 +29,11 @@ public class Generator {
     public static void generate(File base, String[] in) throws IOException {
         File settings = new File(base, "settings.yml");
 
+        LoadManager loadManager = new LoadManager();
+
         Map<String, Object> settingsInfo;
         if (!settings.isFile()) {
-            VOWLog.log("Unable to find settings.yml in " + base.getPath() + " using defaults.");
+            VOWLog.warn("Unable to find settings.yml in " + base.getPath() + " using defaults.");
             settingsInfo = new HashMap<>();
             settingsInfo.put("in", "src");
             settingsInfo.put("out", "out");
@@ -45,11 +49,32 @@ public class Generator {
             in = new String[] {"."};
         }
 
-        for (String filePath : in) {
-            File file = new File(base, filePath);
-            
-        }
+        File baseOutForFile = new File(base, (String)settingsInfo.get("out"));
+        File baseInForFile = new File(base, (String)settingsInfo.get("in"));
 
+        for (String filePath : in) {
+            File file = new File(baseInForFile, filePath);
+
+            if (file.isDirectory()) {
+                buildDir(file, new File(baseOutForFile, filePath));
+            } else if (file.exists()) {
+                loadManager.build(file,
+                        new File(baseOutForFile, filePath.replace(".yml", "")));
+            } else {
+                VOWLog.warn("File " + filePath + "not found");
+            }
+        }
+    }
+
+    public static void buildDir(File folder, File outBase) throws IOException {
+        for (File file : Objects.requireNonNull(folder.listFiles())) {
+            if (file.isDirectory()) {
+                buildDir(file, new File(outBase, file.getName()));
+            } else if (file.exists() && file.getName().endsWith(".yml")) {
+                LoadManager.getInstance().build(file,
+                        new File(outBase, file.getName().replace(".yml", "")));
+            }
+        }
     }
 
 
