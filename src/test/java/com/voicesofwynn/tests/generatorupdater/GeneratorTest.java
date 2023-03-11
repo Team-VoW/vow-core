@@ -1,4 +1,4 @@
-package com.voicesofwynn.tests.generator;
+package com.voicesofwynn.tests.generatorupdater;
 
 import com.voicesofwynn.core.generator.Generator;
 import org.junit.jupiter.api.Test;

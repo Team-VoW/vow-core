@@ -7,8 +7,6 @@ import java.io.File;
 public class VOWCore {
 
     private static IFunctionProvider functionProvider;
-    private static boolean ready = false;
-
     private static File rootFolder;
 
     /**
@@ -21,20 +19,6 @@ public class VOWCore {
 
         functionProvider = provider;
         rootFolder = root;
-
-
-        ready = true;
-    }
-
-
-    /**
-     * Run this method every tick the player is in a world.
-     * <br><br>
-     * This method will crash if run before init()
-     */
-    public static void tick() { // position based sounds and etc
-
-
 
     }
 
