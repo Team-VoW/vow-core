@@ -10,20 +10,26 @@ import java.util.Map;
 
 public class Settings {
 
-    public Settings () {
-        File settings = new File(VOWCore.getRootFolder(), "settings.yml");
+    private Map<String, Object> values;
+    private File settings;
 
-        Yaml yaml = new Yaml();
+    private Yaml yaml;
+
+    public Settings (File settings) {
+        this.settings = settings;
+
+        yaml = new Yaml();
         try {
-            Map<String, Object> fl = yaml.load(Files.newInputStream(settings.toPath()));
+            values = yaml.load(Files.newInputStream(settings.toPath()));
 
-
-
-            yaml.dump(fl, new FileWriter(settings));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public void save () throws IOException {
+        yaml = new Yaml();
+        yaml.dump(values, new FileWriter(settings));
     }
 
 }
