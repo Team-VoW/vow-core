@@ -20,8 +20,6 @@ public class VOWCore {
         functionProvider = provider;
         rootFolder = root;
 
-        new Settings(new File(rootFolder, "settings.yml"));
-
     }
 
     public static File getRootFolder() {

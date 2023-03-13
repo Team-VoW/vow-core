@@ -27,6 +27,20 @@ public class Settings {
         }
     }
 
+    public Object readValue(String key) {
+        String[] split = key.split("\\.");
+        Object value = values;
+        for (String loc : split) {
+            if (value instanceof Map<?, ?>) {
+                value = ((Map<?, ?>) value).get(loc);
+                if (value == null) {
+                    return null;
+                }
+            }
+        }
+        return value;
+    }
+
     public void save () throws IOException {
         yaml = new Yaml();
         yaml.dump(values, new FileWriter(settings));
