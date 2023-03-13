@@ -20,6 +20,8 @@ public class VOWCore {
         functionProvider = provider;
         rootFolder = root;
 
+        new Settings();
+
     }
 
     public static File getRootFolder() {
