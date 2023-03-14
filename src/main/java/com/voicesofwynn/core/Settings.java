@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class Settings {
@@ -39,6 +41,26 @@ public class Settings {
             }
         }
         return value;
+    }
+
+    public List<String> readChildren(String key) {
+        Object val = readValue(key);
+        key += ".";
+        List<String> keys = new LinkedList<>();
+        if (val instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) val;
+            for (Object object : map.keySet()) {
+                if (object instanceof String) {
+                    keys.add(key + object);
+                } else {
+                    return null;
+                }
+            }
+
+        } else {
+            return null;
+        }
+        return keys;
     }
 
     public void save () throws IOException {
