@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,29 @@ public class Settings {
                 if (value == null) {
                     return null;
                 }
+            } else {
+                return null;
             }
         }
         return value;
+    }
+
+    public void setValue(String key) {
+        String[] split = key.split("\\.");
+        Map<String, Object> value = values;
+        for (String loc : split) {
+            if (value != null) {
+                Object tValue = value.computeIfAbsent(loc, k -> new HashMap<String, Object>());
+                if (tValue instanceof Map) {
+                    value = (Map<String, Object>) tValue;
+                } else {
+                    tValue = new HashMap<>();
+                    value.put(loc, tValue);
+                    value = (Map<String, Object>) tValue;
+                    return;
+                }
+            }
+        }
     }
 
     public List<String> readChildren(String key) {
@@ -61,6 +82,17 @@ public class Settings {
             return null;
         }
         return keys;
+    }
+
+    public String readString(String key, String defaultValue) {
+        Object val = readValue(key);
+
+        if (val instanceof String) {
+            return (String) val;
+        }
+
+
+        return defaultValue;
     }
 
     public void save () throws IOException {
