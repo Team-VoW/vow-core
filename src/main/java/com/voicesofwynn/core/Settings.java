@@ -46,22 +46,21 @@ public class Settings {
         return value;
     }
 
-    public void setValue(String key) {
+    public void setValue(String key, Object obj) {
         String[] split = key.split("\\.");
         Map<String, Object> value = values;
-        for (String loc : split) {
-            if (value != null) {
-                Object tValue = value.computeIfAbsent(loc, k -> new HashMap<String, Object>());
-                if (tValue instanceof Map) {
-                    value = (Map<String, Object>) tValue;
-                } else {
-                    tValue = new HashMap<>();
-                    value.put(loc, tValue);
-                    value = (Map<String, Object>) tValue;
-                    return;
-                }
+        for (int i = 0 ; i < split.length - 1 ; i++) {
+            String loc = split[i];
+            Object tValue = value.computeIfAbsent(loc, k -> new HashMap<String, Object>());
+            if (tValue instanceof Map) {
+                value = (Map<String, Object>) tValue;
+            } else {
+                tValue = new HashMap<>();
+                value.put(loc, tValue);
+                value = (Map<String, Object>) tValue;
             }
         }
+        value.put(split[split.length - 1], obj);
     }
 
     public List<String> readChildren(String key) {
@@ -90,8 +89,37 @@ public class Settings {
         if (val instanceof String) {
             return (String) val;
         }
+        setValue(key, defaultValue);
+        return defaultValue;
+    }
 
+    public int readInteger(String key, int defaultValue) {
+        Object val = readValue(key);
 
+        if (val instanceof Integer) {
+            return (int) val;
+        }
+        setValue(key, defaultValue);
+        return defaultValue;
+    }
+
+    public float readFloat(String key, float defaultValue) {
+        Object val = readValue(key);
+
+        if (val instanceof Float) {
+            return (float) val;
+        }
+        setValue(key, defaultValue);
+        return defaultValue;
+    }
+
+    public boolean readBoolean(String key, boolean defaultValue) {
+        Object val = readValue(key);
+
+        if (val instanceof Boolean) {
+            return (boolean) val;
+        }
+        setValue(key, defaultValue);
         return defaultValue;
     }
 
