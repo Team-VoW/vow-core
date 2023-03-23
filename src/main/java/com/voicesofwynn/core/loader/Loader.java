@@ -41,6 +41,11 @@ public class Loader {
             sources.put(split[split.length-1], val);
         }
 
+        sources.putAll(VOWCore.getFunctionProvider().defaultSources());
+    }
+
+    public void load() {
+
     }
 
 }
