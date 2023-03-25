@@ -4,22 +4,34 @@ import com.voicesofwynn.core.Settings;
 import com.voicesofwynn.core.VOWCore;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Loader {
 
-    private Settings config;
     private File base;
 
     private LinkedHashMap<String, String> sources;
-    private LinkedHashMap<String, Map<String, Object>> sourcesEnables;
+    private Map<String, Map<String, Object>> sourcesEnables;
+
+    public static Loader getInstance() {
+        return instance;
+    }
+
+    public static Loader instance;
+
     public Loader () {
         if (VOWCore.getRootFolder().getPath().equals(""))
             return;
+        instance = this;
 
+        sourcesEnables = new HashMap<>();
         sources = new LinkedHashMap<>();
 
         base = new File(VOWCore.getRootFolder(), "files");
@@ -32,12 +44,12 @@ public class Loader {
                 throw new RuntimeException(e);
             }
         }
-        config = new Settings(setFile);
+        Settings config = new Settings(setFile);
 
         for (String str : config.readChildren("sources")) {
             String val = config.readString(str, "non");
             if (val.equals("non")) {
-                return;
+                continue;
             }
             String[] split = str.split("\\.");
             sources.put(split[split.length-1], val);
@@ -46,17 +58,22 @@ public class Loader {
         sources.putAll(VOWCore.getFunctionProvider().defaultSources());
 
         loadSourceEnables();
+        saveSourceEnables();
     }
 
     public void loadSourceEnables() {
         for (Map.Entry<String, String> source : sources.entrySet()) {
             String name = source.getKey();
-            File cfg = new File(base, "sources/" + name + "/enabled.yml");
-            Yaml yaml = new Yaml();
-            try {
-                sourcesEnables.put(name, yaml.load(new FileInputStream(cfg)));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+            File cfg = new File(base, name + "/enabled.yml");
+            if (cfg.exists()) {
+                Yaml yaml = new Yaml();
+                try {
+                    sourcesEnables.put(name, yaml.load(new FileInputStream(cfg)));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                sourcesEnables.put(name, new LinkedHashMap<>());
             }
         }
     }
@@ -64,11 +81,11 @@ public class Loader {
     public void saveSourceEnables() {
         for (Map.Entry<String, String> source : sources.entrySet()) {
             String name = source.getKey();
-            File cfg = new File(base, "sources/" + name + "/enabled.yml");
+            File cfg = new File(base, name + "/enabled.yml");
             cfg.getParentFile().mkdirs();
             Yaml yaml = new Yaml();
             try {
-                yaml.dump(cfg, new FileWriter(cfg));
+                yaml.dump(sourcesEnables.get(name), new FileWriter(cfg));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
