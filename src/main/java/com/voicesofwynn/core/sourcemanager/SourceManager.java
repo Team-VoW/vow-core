@@ -1,4 +1,4 @@
-package com.voicesofwynn.core.loader;
+package com.voicesofwynn.core.sourcemanager;
 
 import com.voicesofwynn.core.Settings;
 import com.voicesofwynn.core.VOWCore;
@@ -13,20 +13,20 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Loader {
+public class SourceManager {
 
     private File base;
 
     private LinkedHashMap<String, String> sources;
     private Map<String, Map<String, Object>> sourcesEnables;
 
-    public static Loader getInstance() {
+    public static SourceManager getInstance() {
         return instance;
     }
 
-    public static Loader instance;
+    public static SourceManager instance;
 
-    public Loader () {
+    public SourceManager() {
         if (VOWCore.getRootFolder().getPath().equals(""))
             return;
         instance = this;

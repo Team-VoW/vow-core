@@ -1,7 +1,7 @@
 package com.voicesofwynn.core;
 
 import com.voicesofwynn.core.interfaces.IFunctionProvider;
-import com.voicesofwynn.core.loader.Loader;
+import com.voicesofwynn.core.sourcemanager.SourceManager;
 
 import java.io.File;
 
@@ -21,7 +21,7 @@ public class VOWCore {
         functionProvider = provider;
         rootFolder = root;
 
-        new Loader();
+        new SourceManager();
 
     }
 
