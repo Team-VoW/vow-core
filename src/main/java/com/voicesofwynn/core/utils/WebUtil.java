@@ -58,6 +58,7 @@ public class WebUtil {
                     System.out.println(source);
                     URL url = new URL(source + address);
                     HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+
                     con.setConnectTimeout(20000);
                     System.out.println(source + " 0");
 
