@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.CRC32;
 
 public class SourceManager {
 
@@ -123,6 +124,21 @@ public class SourceManager {
     public Map<String, String[]> configFiles = new HashMap<>();
     public Map<String, String[]> soundFiles = new HashMap<>();
 
+    public static long readHash(File f) {
+        if (!f.exists()) {
+            return -1;
+        }
+        if (f.isDirectory()) {
+            return -1;
+        }
+        CRC32 crc32 = new CRC32();
+        try {
+            crc32.update(Files.readAllBytes(f.toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return crc32.getValue();
+    }
     private void treeWalkUpdate(Map<String, Object> enabled, boolean everything,
                                 String currentPath, Sources sources, File root,
                                 WebUtil util) {
@@ -138,6 +154,16 @@ public class SourceManager {
                             long hash = ByteUtils.readLong(got);
 
                             System.out.println("Test got " + name + " - " + type + " - " + hash);
+
+                            if (type == 1) {
+                                String path = currentPath + "$" + name;
+                                File localPath = new File(root, "lists/" + path);
+                                long hashLocal = readHash(localPath);
+                                System.out.println("Does local match? " + (hashLocal == hash));
+                                treeWalkUpdate(enabled, everything, path, sources, root, util);
+                            } else {
+
+                            }
                         }
                         got.close();
                     } catch (Exception e) {
