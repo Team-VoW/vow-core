@@ -6,11 +6,16 @@ import com.voicesofwynn.core.utils.VOWLog;
 import com.voicesofwynn.core.utils.WebUtil;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
 
@@ -19,8 +24,6 @@ public class SourceManager {
     private File base;
 
     private LinkedHashMap<String, String[]> sources;
-    private Map<String, Map<String, Object>> sourcesEnables;
-
     public static SourceManager getInstance() {
         return instance;
     }
@@ -32,7 +35,6 @@ public class SourceManager {
             return;
         instance = this;
 
-        sourcesEnables = new HashMap<>();
         sources = new LinkedHashMap<>();
 
         base = new File(VOWCore.getRootFolder(), "files");
@@ -60,46 +62,24 @@ public class SourceManager {
                 for (Map.Entry<String, Object> str : ((Map<String, Object>) sourcesObj).entrySet()) {
                     sources.put(str.getKey(), str.getValue().toString().split("\\|"));
                 }
-
-                loadSourceEnables();
-                saveSourceEnables();
             }
         } else {
             sources.putAll(VOWCore.getFunctionProvider().defaultSources());
         }
     }
 
-    public void loadSourceEnables() {
-        for (Map.Entry<String, String[]> source : sources.entrySet()) {
-            String name = source.getKey();
-            File cfg = new File(base, name + "/enabled.yml");
-            if (cfg.exists()) {
-                Yaml yaml = new Yaml();
-                try {
-                    sourcesEnables.put(name, yaml.load(Files.newInputStream(cfg.toPath())));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                sourcesEnables.put(name, new LinkedHashMap<>());
-            }
-        }
-    }
-
-    public void saveSourceEnables() {
-        for (Map.Entry<String, String[]> source : sources.entrySet()) {
-            String name = source.getKey();
-            File cfg = new File(base, name + "/enabled.yml");
-            cfg.getParentFile().mkdirs();
+    public Map<String, Object> loadSourceEnables(File folder) {
+        File options = new File(folder, "enables.yml");
+        if (options.exists()) {
             Yaml yaml = new Yaml();
             try {
-                yaml.dump(sourcesEnables.get(name), new FileWriter(cfg));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                return yaml.load(Files.newInputStream(options.toPath()));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+        return new HashMap<>();
     }
-
 
     public void update() {
         VOWCore.isWorking = false;
@@ -110,9 +90,10 @@ public class SourceManager {
             File root = new File(base, "sources/" + name);
             WebUtil util = new WebUtil();
 
-            treeWalkUpdate(sourcesEnables.get(name), false, "base", sources, root, util);
+            treeWalkUpdate(loadSourceEnables(root), false, "base", sources, root, util);
 
             while (neededTreeWalk.get() > doneTreeWalk.get()) {
+
             }
         }
         VOWCore.isWorking = true;
@@ -121,8 +102,19 @@ public class SourceManager {
     public volatile AtomicInteger neededTreeWalk = new AtomicInteger(0);
     public volatile AtomicInteger doneTreeWalk = new AtomicInteger(0);
 
-    public Map<String, String[]> configFiles = new HashMap<>();
-    public Map<String, String[]> soundFiles = new HashMap<>();
+    public ConcurrentMap<String, RemoteFile> configFiles = new ConcurrentHashMap<>();
+    public ConcurrentMap<String, RemoteFile> soundFiles = new ConcurrentHashMap<>();
+
+    public static class RemoteFile {
+        public Sources sources;
+
+        public File file;
+
+        public RemoteFile(Sources sources, File file) {
+            this.sources = sources;
+            this.file = file;
+        }
+    }
 
     public static long readHash(File f) {
         if (!f.exists()) {
@@ -139,30 +131,75 @@ public class SourceManager {
         }
         return crc32.getValue();
     }
-    private void treeWalkUpdate(Map<String, Object> enabled, boolean everything,
+
+    private boolean isChild(File child, File parent) {
+        File cur = child.getParentFile();
+        while (cur != null) {
+            if (cur.equals(parent)) {
+                return true;
+            }
+            cur = parent.getParentFile();
+        }
+        return false;
+    }
+    private void treeWalkUpdate(Map<String, Object> enabled, boolean everything_,
                                 String currentPath, Sources sources, File root,
                                 WebUtil util) {
 
         neededTreeWalk.addAndGet(1);
         util.getRemoteFile(
-                "lists/" + currentPath,
+                "lists/" + currentPath.replaceAll("/", "\\$"),
                 (got) -> {
+                    boolean everything = everything_;
                     try {
                         while (got.read(new byte[0]) != -1) {
                             String name = ByteUtils.readString(got);
                             byte type = ByteUtils.readByte(got);
                             long hash = ByteUtils.readLong(got);
 
+                            String path = currentPath + "/" + name;
+
                             System.out.println("Test got " + name + " - " + type + " - " + hash);
+                            boolean enabledBool = everything;
+                            if (!everything) {
+                                Object enabledObj = enabled.get(name);
+                                if (enabledObj != null) {
+                                    if (enabledObj.equals("*")) {
+                                        everything = true;
+                                    }
+                                    enabledBool = true;
+                                }
+                            }
+                            if (enabledBool) {
+                                if (type == 1) {
+                                    File localPath = new File(root, "lists/" + path.replaceAll("/", "\\$"));
+                                    long hashLocal = readHash(localPath);
+                                    System.out.println("Does local match? " + (hashLocal == hash));
+                                    treeWalkUpdate(enabled, everything, path, sources, root, util);
+                                } else {
+                                    try {
+                                        new File(root, "files/" + currentPath).mkdirs();
+                                    } catch (Exception e) { // just in case
+                                        e.printStackTrace();
+                                    }
+                                    File fl = new File(root,"files/" + path);
 
-                            if (type == 1) {
-                                String path = currentPath + "$" + name;
-                                File localPath = new File(root, "lists/" + path);
-                                long hashLocal = readHash(localPath);
-                                System.out.println("Does local match? " + (hashLocal == hash));
-                                treeWalkUpdate(enabled, everything, path, sources, root, util);
-                            } else {
+                                    if (!isChild(fl, new File(root,"files"))) {
+                                        break;
+                                    }
 
+                                    if (name.endsWith(".vow-config")) {
+                                        configFiles.put(path, new RemoteFile(
+                                                sources,
+                                                fl
+                                        ));
+                                    } else {
+                                        soundFiles.put(path, new RemoteFile(
+                                                sources,
+                                                fl
+                                        ));
+                                    }
+                                }
                             }
                         }
                         got.close();
