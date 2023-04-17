@@ -3,14 +3,12 @@ package com.voicesofwynn.core.utils;
 import com.voicesofwynn.core.sourcemanager.Sources;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -60,15 +58,14 @@ public class WebUtil {
             for (String source : sources.getSources()) {
                 try {
                     URL url = new URL(source + address);
-                    System.out.println(source);
-                    HttpsURLConnection con;
-                    System.out.println(url);
-                    SSLContext.getDefault();
+                    
+                    HttpsURLConnection con = null;
+
                     con = (HttpsURLConnection) url.openConnection();
-                    System.out.println(source + " -1");
+                    
 
                     con.setConnectTimeout(20000);
-                    System.out.println(source + " 0");
+                    
 
                     // sort out redirection response, send a second request to the new location
                     String redirect = con.getHeaderField("Location");
@@ -77,7 +74,7 @@ public class WebUtil {
                         con.setConnectTimeout(2000);
                     }
 
-                    System.out.println(source + " 1");
+                    
 
                     String re = con.getResponseMessage();
                     if (re.equals("OK")) {
@@ -87,14 +84,12 @@ public class WebUtil {
                             sources.moveUp(source);
                         }
                     } else {
-                        System.out.println(re + " | " + url);
+                        
                         throw new IOException();
                     }
                     break; // no need to try other sources
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    throw new RuntimeException(e);
                 }
                 i++;
             }

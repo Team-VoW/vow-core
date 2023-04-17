@@ -7,6 +7,12 @@ import java.io.File;
 
 public class VOWCore {
 
+    public static volatile boolean isWorking = false;
+
+    public static boolean isWorking() {
+        return isWorking;
+    }
+
     private static IFunctionProvider functionProvider;
     private static File rootFolder;
 

@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SourceManager {
 
@@ -100,6 +101,7 @@ public class SourceManager {
 
 
     public void update() {
+        VOWCore.isWorking = false;
         for (Map.Entry<String, String[]> source : sources.entrySet()) {
             String name = source.getKey();
             Sources sources = new Sources(source.getValue());
@@ -108,9 +110,15 @@ public class SourceManager {
             WebUtil util = new WebUtil();
 
             treeWalkUpdate(sourcesEnables.get(name), false, "base", sources, root, util);
-        }
 
+            while (neededTreeWalk.get() > doneTreeWalk.get()) {
+            }
+        }
+        VOWCore.isWorking = true;
     }
+
+    public volatile AtomicInteger neededTreeWalk = new AtomicInteger(0);
+    public volatile AtomicInteger doneTreeWalk = new AtomicInteger(0);
 
     public Map<String, String[]> configFiles = new HashMap<>();
     public Map<String, String[]> soundFiles = new HashMap<>();
@@ -118,14 +126,13 @@ public class SourceManager {
     private void treeWalkUpdate(Map<String, Object> enabled, boolean everything,
                                 String currentPath, Sources sources, File root,
                                 WebUtil util) {
-        System.out.println("Test start = " + "lists/" + currentPath);
 
+        neededTreeWalk.addAndGet(1);
         util.getRemoteFile(
                 "lists/" + currentPath,
                 (got) -> {
-                    System.out.println("Test " + currentPath);
                     try {
-                        while (got.available() > 0) {
+                        while (got.read(new byte[0]) != -1) {
                             String name = ByteUtils.readString(got);
                             byte type = ByteUtils.readByte(got);
                             long hash = ByteUtils.readLong(got);
@@ -137,6 +144,7 @@ public class SourceManager {
                         e.printStackTrace();
                         VOWLog.log("Failed to download " + "lists/" + currentPath);
                     }
+                    doneTreeWalk.addAndGet(1);
                 },
                 sources
         );
