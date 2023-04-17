@@ -1,7 +1,7 @@
 package com.voicesofwynn.core.utils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
@@ -20,14 +20,14 @@ public class ByteUtils {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static int readInteger(FileInputStream input) throws IOException {
+    public static int readInteger(InputStream input) throws IOException {
         byte[] b = new byte[4];
         input.read(b);
         return ByteBuffer.wrap(b).getInt();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static float readFloat(FileInputStream input) throws IOException {
+    public static float readFloat(InputStream input) throws IOException {
         byte[] b = new byte[4];
         input.read(b);
         return ByteBuffer.wrap(b).getFloat();
@@ -52,7 +52,7 @@ public class ByteUtils {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static String readString(FileInputStream input) throws IOException {
+    public static String readString(InputStream input) throws IOException {
         int size = readInteger(input);
         byte[] st = new byte[size];
         input.read(st);
@@ -61,14 +61,14 @@ public class ByteUtils {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static byte readByte(FileInputStream input) throws IOException {
+    public static byte readByte(InputStream input) throws IOException {
         byte[] st = new byte[1];
         input.read(st);
         return st[0];
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static long readLong(FileInputStream input) throws IOException {
+    public static long readLong(InputStream input) throws IOException {
         byte[] b = new byte[8];
         input.read(b);
         return ByteBuffer.wrap(b).getLong();

@@ -1,12 +1,16 @@
 package com.voicesofwynn.core.utils;
 
+import com.voicesofwynn.core.sourcemanager.Sources;
+
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -48,16 +52,20 @@ public class WebUtil {
         }
     }
 
-    public static InputStream getHttpStream(String address, String[] sources) throws IOException {
+    public static InputStream getHttpStream(String address, Sources sources) throws IOException {
         address = address.replace(" ", "%20"); //Replace spaces in the filename
         InputStream stream = null;
         try {
             int i = 0;
-            for (String source : sources) {
+            for (String source : sources.getSources()) {
                 try {
-                    System.out.println(source);
                     URL url = new URL(source + address);
-                    HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+                    System.out.println(source);
+                    HttpsURLConnection con;
+                    System.out.println(url);
+                    SSLContext.getDefault();
+                    con = (HttpsURLConnection) url.openConnection();
+                    System.out.println(source + " -1");
 
                     con.setConnectTimeout(20000);
                     System.out.println(source + " 0");
@@ -75,10 +83,9 @@ public class WebUtil {
                     if (re.equals("OK")) {
                         stream = con.getInputStream();
 
-                        // replace primary source with this one, because it works the best for now
-                        String zero = sources[i];
-                        sources[i] = sources[0];
-                        sources[0] = zero;
+                        if (i != 0) {
+                            sources.moveUp(source);
+                        }
                     } else {
                         System.out.println(re + " | " + url);
                         throw new IOException();
@@ -86,6 +93,8 @@ public class WebUtil {
                     break; // no need to try other sources
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
                 }
                 i++;
             }
@@ -114,22 +123,21 @@ public class WebUtil {
         return (int) es.getCompletedTaskCount();
     }
 
-    public void getRemoteFile(String path, remoteFileGot rfg, String[] sources) {
+    public void getRemoteFile(String path, remoteFileGot rfg, Sources sources) {
         es.submit(
                 () -> {
                     try {
                         InputStream s = getHttpStream(path, sources);
-                        rfg.run(readAllBytes(s));
+                        rfg.run(s);
                     } catch (Exception e) {
                         rfg.run(null);
                     }
                 }
         );
-
     }
 
     public interface remoteFileGot {
-        void run(byte[] contents);
+        void run(InputStream contents);
     }
 
     public static class remoteJar {

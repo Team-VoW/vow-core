@@ -10,7 +10,7 @@ public interface IFunctionProvider {
 
     VOWLocation getPlayerLocation();
 
-    default Map<String, String> defaultSources () {
+    default Map<String, String[]> defaultSources () {
         return new HashMap<>();
     }
 
