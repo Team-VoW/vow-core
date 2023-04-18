@@ -210,9 +210,9 @@ public class SourceManager {
         util.getRemoteFile(
                 "lists/base" + currentPath.replaceAll("/", "\\$"),
                 (got) -> {
-                    boolean everything = everything_;
                     try {
                         while (got.read(new byte[0]) != -1) {
+                            boolean everything = everything_;
                             String name = ByteUtils.readString(got);
                             byte type = ByteUtils.readByte(got);
                             long hash = ByteUtils.readLong(got);
