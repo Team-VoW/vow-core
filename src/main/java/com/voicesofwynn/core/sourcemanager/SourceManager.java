@@ -7,11 +7,9 @@ import com.voicesofwynn.core.utils.VOWLog;
 import com.voicesofwynn.core.utils.WebUtil;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -95,7 +93,7 @@ public class SourceManager {
             treeWalkUpdate(loadSourceEnables(root), false, "", sources, root, util);
 
             while (neededTreeWalk.get() > doneTreeWalk.get()) {
-                System.out.println(neededTreeWalk.get() + " - " + doneTreeWalk.get());
+                
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -127,7 +125,7 @@ public class SourceManager {
                     deleteUnknown(f, cur);
                 } else {
                     if (!configFiles.containsKey(cur) && !soundFiles.containsKey(cur)) {
-                        System.out.println("Sniped out of existence " + cur);
+                        
                         f.delete();
                     }
                 }
@@ -138,29 +136,32 @@ public class SourceManager {
 
         fs = root.listFiles();
         if (fs != null && fs.length == 0) {
-            System.out.println("Sniped out of existence " + path);
+            
             root.delete();
         }
     }
 
     public void downloadConfigs() {
         WebUtil util = new WebUtil();
+        int started = 0;
         for (Map.Entry<String, RemoteFile> entry : configFiles.entrySet()) {
             RemoteFile file = entry.getValue();
-            System.out.println(entry.getKey().substring(1));
-            util.getRemoteFile(
-                    "src/" + entry.getKey().substring(1),
-                    (got) -> {
-                        try {
-                            Files.copy(got, file.file.toPath());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    },
-                    file.sources
-            );
+            if (!file.file.exists() || readHash(file.file) != file.hash) {
+                util.getRemoteFile(
+                        "src/" + entry.getKey().substring(1),
+                        (got) -> {
+                            try {
+                                Files.copy(got, file.file.toPath());
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        },
+                        file.sources
+                );
+                started++;
+            }
         }
-        while (util.finished() < configFiles.size()) {
+        while (util.finished() < started) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -202,6 +203,71 @@ public class SourceManager {
     private boolean isChild(File child, File parent) {
         return (child.toPath().startsWith(parent.toPath()));
     }
+
+    private void walkOfflineTree(Map<String, Object> enabled, boolean everything_,
+                                 String currentPath, Sources sources, File root) {
+        File ops = new File(root, "lists/base" + currentPath.replaceAll("/", "\\$"));
+        try {
+            InputStream stream = Files.newInputStream(ops.toPath());
+            while (stream.available() > 0) {
+                boolean everything = everything_;
+                String name = ByteUtils.readString(stream);
+                byte type = ByteUtils.readByte(stream);
+                long hash = ByteUtils.readLong(stream);
+
+                String path = currentPath + "/" + name;
+
+                File fl = new File(root, "files/" + path);
+
+                if (!isChild(fl, new File(root, "files"))) {
+                    fl = new File(root, "files/" + currentPath + "/very-bad-name-" + new Random().nextFloat());
+                }
+
+                Map<String, Object> en = null;
+                boolean enabledBool = everything;
+                if (!everything) {
+                    Object enabledObj = enabled.get(name);
+                    if (enabledObj != null) {
+                        if (enabledObj.equals("*")) {
+                            everything = true;
+                        } else if (enabledObj instanceof Map) {
+                            en = (Map<String, Object>) enabledObj;
+                        }
+                        enabledBool = true;
+                    }
+                }
+                if (enabledBool) {
+                    if (type == 1) {
+                        walkOfflineTree(en, everything, path, sources, root);
+                    } else {
+                        try {
+                            new File(root, "files" + currentPath).mkdirs();
+                        } catch (Exception e) { // just in case
+                            e.printStackTrace();
+                        }
+
+                        if (name.endsWith(".vow-config")) {
+                            configFiles.put(path, new RemoteFile(
+                                    sources,
+                                    fl,
+                                    hash
+                            ));
+                        } else {
+                            soundFiles.put(path, new RemoteFile(
+                                    sources,
+                                    fl,
+                                    hash
+                            ));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void treeWalkUpdate(Map<String, Object> enabled, boolean everything_,
                                 String currentPath, Sources sources, File root,
                                 WebUtil util) {
@@ -211,11 +277,16 @@ public class SourceManager {
                 "lists/base" + currentPath.replaceAll("/", "\\$"),
                 (got) -> {
                     try {
-                        while (got.read(new byte[0]) != -1) {
+                        File ops = new File(root, "lists/base" + currentPath.replaceAll("/", "\\$"));
+                        ops.getParentFile().mkdirs();
+                        Files.copy(got, ops.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                        InputStream stream = Files.newInputStream(ops.toPath());
+                        while (stream.available() > 0) {
                             boolean everything = everything_;
-                            String name = ByteUtils.readString(got);
-                            byte type = ByteUtils.readByte(got);
-                            long hash = ByteUtils.readLong(got);
+                            String name = ByteUtils.readString(stream);
+                            byte type = ByteUtils.readByte(stream);
+                            long hash = ByteUtils.readLong(stream);
 
                             String path = currentPath + "/" + name;
 
@@ -238,12 +309,22 @@ public class SourceManager {
                                     enabledBool = true;
                                 }
                             }
-                            if (enabledBool) { // TODO: replace, we need to save the file not create lists heh.
+                            
+
+                            if (enabledBool) {
                                 if (type == 1) {
                                     File localPath = new File(root, "lists/base" + path.replaceAll("/", "\\$"));
                                     long hashLocal = readHash(localPath);
                                     if (hashLocal != hash) {
+                                        
                                         treeWalkUpdate(en, everything, path, sources, root, util);
+                                        
+                                    } else {
+                                        
+
+                                        walkOfflineTree(en, everything, path, sources, root);
+                                        
+
                                     }
                                 } else {
                                     try {
