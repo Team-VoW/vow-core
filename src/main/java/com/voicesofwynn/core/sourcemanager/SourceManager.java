@@ -124,7 +124,7 @@ public class SourceManager {
                 if (f.isDirectory()) {
                     deleteUnknown(f, cur);
                 } else {
-                    if (!configFiles.containsKey(cur) && soundFiles.containsKey(cur)) {
+                    if (!configFiles.containsKey(cur) && !soundFiles.containsKey(cur)) {
                         System.out.println("Sniped out of existence " + cur);
                         f.delete();
                     }
