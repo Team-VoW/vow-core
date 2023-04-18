@@ -16,6 +16,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class DialogueType implements RegisterType {
+
+
+    @Override
+    public void prepare() {
+        if (DialogueRegister.getInstance() != null) {
+            DialogueRegister.getInstance().getDialogs().clear();
+        }
+    }
+
     @Override
     public void load(FileInputStream in) throws IOException {
         int amountOfDialogs = ByteUtils.readInteger(in);

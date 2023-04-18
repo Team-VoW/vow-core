@@ -21,4 +21,6 @@ public interface RegisterType {
 
     String getName();
 
+    default void prepare() {}
+
 }

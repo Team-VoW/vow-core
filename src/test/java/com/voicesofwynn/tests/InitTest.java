@@ -37,6 +37,9 @@ public class InitTest {
 
         SourceManager.getInstance().update();
 
+        SourceManager.getInstance().reload();
+
+
         while (!VOWCore.isWorking()) {
             System.out.println(!VOWCore.isWorking());
         }

@@ -41,6 +41,6 @@ public class DialogueRegister implements ChatMessageEvent.messageListener {
 
     @Override
     public void message(String str) {
-
+        // TODO: Make work
     }
 }

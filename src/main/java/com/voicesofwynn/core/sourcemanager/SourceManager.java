@@ -2,6 +2,7 @@ package com.voicesofwynn.core.sourcemanager;
 
 import com.voicesofwynn.core.Options;
 import com.voicesofwynn.core.VOWCore;
+import com.voicesofwynn.core.loadmanager.LoadManager;
 import com.voicesofwynn.core.utils.ByteUtils;
 import com.voicesofwynn.core.utils.VOWLog;
 import com.voicesofwynn.core.utils.WebUtil;
@@ -309,21 +310,21 @@ public class SourceManager {
                                     enabledBool = true;
                                 }
                             }
-                            
+
 
                             if (enabledBool) {
                                 if (type == 1) {
                                     File localPath = new File(root, "lists/base" + path.replaceAll("/", "\\$"));
                                     long hashLocal = readHash(localPath);
                                     if (hashLocal != hash) {
-                                        
+
                                         treeWalkUpdate(en, everything, path, sources, root, util);
-                                        
+
                                     } else {
-                                        
+
 
                                         walkOfflineTree(en, everything, path, sources, root);
-                                        
+
 
                                     }
                                 } else {
@@ -362,10 +363,29 @@ public class SourceManager {
 
     }
 
-    public void load() {
+    public void reload() {
+        for (Map.Entry<String, String[]> source : sources.entrySet()) {
+            String name = source.getKey();
+            File root = new File(base, "sources/" + name);
+            loadDir(root);
+        }
+    }
 
-
-
+    public void loadDir(File f) {
+        File[] fs = f.listFiles();
+        if (fs == null)
+            return;
+        for (File file : fs) {
+            if (file.isDirectory()) {
+                loadDir(file);
+            } else if (file.getName().endsWith(".vow-config")) {
+                try {
+                    LoadManager.getInstance().load(file);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
 }
