@@ -92,7 +92,7 @@ public class SourceManager {
             File root = new File(base, "sources/" + name);
             WebUtil util = new WebUtil();
 
-            treeWalkUpdate(loadSourceEnables(root), false, "base", sources, root, util);
+            treeWalkUpdate(loadSourceEnables(root), false, "", sources, root, util);
 
             while (neededTreeWalk.get() > doneTreeWalk.get()) {
                 System.out.println(neededTreeWalk.get() + " - " + doneTreeWalk.get());
@@ -102,6 +102,8 @@ public class SourceManager {
                     throw new RuntimeException(e);
                 }
             }
+
+            downloadConfigs();
 
             if (Options.deleteUnneededFiles) {
                 deleteUnknown(new File(root, "files"), "");
@@ -141,7 +143,31 @@ public class SourceManager {
         }
     }
 
-
+    public void downloadConfigs() {
+        WebUtil util = new WebUtil();
+        for (Map.Entry<String, RemoteFile> entry : configFiles.entrySet()) {
+            RemoteFile file = entry.getValue();
+            System.out.println(entry.getKey().substring(1));
+            util.getRemoteFile(
+                    "src/" + entry.getKey().substring(1),
+                    (got) -> {
+                        try {
+                            Files.copy(got, file.file.toPath());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    file.sources
+            );
+        }
+        while (util.finished() < configFiles.size()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     public static class RemoteFile {
         public Sources sources;
@@ -182,7 +208,7 @@ public class SourceManager {
 
         neededTreeWalk.addAndGet(1);
         util.getRemoteFile(
-                "lists/" + currentPath.replaceAll("/", "\\$"),
+                "lists/base" + currentPath.replaceAll("/", "\\$"),
                 (got) -> {
                     boolean everything = everything_;
                     try {
@@ -199,27 +225,29 @@ public class SourceManager {
                                 fl = new File(root,"files/" + currentPath + "/very-bad-name-" + new Random().nextFloat());
                             }
 
-
-                            System.out.println("Test got " + name + " - " + type + " - " + hash);
+                            Map<String, Object> en = null;
                             boolean enabledBool = everything;
                             if (!everything) {
                                 Object enabledObj = enabled.get(name);
                                 if (enabledObj != null) {
                                     if (enabledObj.equals("*")) {
                                         everything = true;
+                                    } else if (enabledObj instanceof Map) {
+                                        en = (Map<String, Object>) enabledObj;
                                     }
                                     enabledBool = true;
                                 }
                             }
-                            if (enabledBool) {
+                            if (enabledBool) { // TODO: replace, we need to save the file not create lists heh.
                                 if (type == 1) {
-                                    File localPath = new File(root, "lists/" + path.replaceAll("/", "\\$"));
+                                    File localPath = new File(root, "lists/base" + path.replaceAll("/", "\\$"));
                                     long hashLocal = readHash(localPath);
-                                    System.out.println("Does local match? " + (hashLocal == hash));
-                                    treeWalkUpdate(enabled, everything, path, sources, root, util);
+                                    if (hashLocal != hash) {
+                                        treeWalkUpdate(en, everything, path, sources, root, util);
+                                    }
                                 } else {
                                     try {
-                                        new File(root, "files/" + currentPath).mkdirs();
+                                        new File(root, "files" + currentPath).mkdirs();
                                     } catch (Exception e) { // just in case
                                         e.printStackTrace();
                                     }

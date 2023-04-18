@@ -84,7 +84,6 @@ public class WebUtil {
                             sources.moveUp(source);
                         }
                     } else {
-                        
                         throw new IOException();
                     }
                     break; // no need to try other sources
