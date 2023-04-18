@@ -1,5 +1,6 @@
 package com.voicesofwynn.core.sourcemanager;
 
+import com.voicesofwynn.core.Options;
 import com.voicesofwynn.core.VOWCore;
 import com.voicesofwynn.core.utils.ByteUtils;
 import com.voicesofwynn.core.utils.VOWLog;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -93,7 +95,16 @@ public class SourceManager {
             treeWalkUpdate(loadSourceEnables(root), false, "base", sources, root, util);
 
             while (neededTreeWalk.get() > doneTreeWalk.get()) {
+                System.out.println(neededTreeWalk.get() + " - " + doneTreeWalk.get());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
+            if (Options.deleteUnneededFiles) {
+                deleteUnknown(new File(root, "files"), "");
             }
         }
         VOWCore.isWorking = true;
@@ -105,14 +116,44 @@ public class SourceManager {
     public ConcurrentMap<String, RemoteFile> configFiles = new ConcurrentHashMap<>();
     public ConcurrentMap<String, RemoteFile> soundFiles = new ConcurrentHashMap<>();
 
+    public void deleteUnknown(File root, String path) {
+        File[] fs = root.listFiles();
+        if (fs != null) {
+            for (File f : fs) {
+                String cur = path + "/" + f.getName();
+                if (f.isDirectory()) {
+                    deleteUnknown(f, cur);
+                } else {
+                    if (!configFiles.containsKey(cur) && soundFiles.containsKey(cur)) {
+                        System.out.println("Sniped out of existence " + cur);
+                        f.delete();
+                    }
+                }
+            }
+        }
+
+
+
+        fs = root.listFiles();
+        if (fs != null && fs.length == 0) {
+            System.out.println("Sniped out of existence " + path);
+            root.delete();
+        }
+    }
+
+
+
     public static class RemoteFile {
         public Sources sources;
 
         public File file;
 
-        public RemoteFile(Sources sources, File file) {
+        public long hash;
+
+        public RemoteFile(Sources sources, File file, long hash) {
             this.sources = sources;
             this.file = file;
+            this.hash = hash;
         }
     }
 
@@ -133,14 +174,7 @@ public class SourceManager {
     }
 
     private boolean isChild(File child, File parent) {
-        File cur = child.getParentFile();
-        while (cur != null) {
-            if (cur.equals(parent)) {
-                return true;
-            }
-            cur = parent.getParentFile();
-        }
-        return false;
+        return (child.toPath().startsWith(parent.toPath()));
     }
     private void treeWalkUpdate(Map<String, Object> enabled, boolean everything_,
                                 String currentPath, Sources sources, File root,
@@ -158,6 +192,13 @@ public class SourceManager {
                             long hash = ByteUtils.readLong(got);
 
                             String path = currentPath + "/" + name;
+
+                            File fl = new File(root,"files/" + path);
+
+                            if (!isChild(fl, new File(root,"files"))) {
+                                fl = new File(root,"files/" + currentPath + "/very-bad-name-" + new Random().nextFloat());
+                            }
+
 
                             System.out.println("Test got " + name + " - " + type + " - " + hash);
                             boolean enabledBool = everything;
@@ -182,21 +223,18 @@ public class SourceManager {
                                     } catch (Exception e) { // just in case
                                         e.printStackTrace();
                                     }
-                                    File fl = new File(root,"files/" + path);
-
-                                    if (!isChild(fl, new File(root,"files"))) {
-                                        break;
-                                    }
 
                                     if (name.endsWith(".vow-config")) {
                                         configFiles.put(path, new RemoteFile(
                                                 sources,
-                                                fl
+                                                fl,
+                                                hash
                                         ));
                                     } else {
                                         soundFiles.put(path, new RemoteFile(
                                                 sources,
-                                                fl
+                                                fl,
+                                                hash
                                         ));
                                     }
                                 }
@@ -207,6 +245,7 @@ public class SourceManager {
                         e.printStackTrace();
                         VOWLog.log("Failed to download " + "lists/" + currentPath);
                     }
+
                     doneTreeWalk.addAndGet(1);
                 },
                 sources
