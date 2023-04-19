@@ -102,11 +102,11 @@ public class SourceManager {
                 }
             }
 
-            downloadConfigs();
-
             if (Options.deleteUnneededFiles) {
                 deleteUnknown(new File(root, "files"), "");
             }
+
+            downloadConfigs();
         }
         VOWCore.isWorking = true;
     }
@@ -126,7 +126,6 @@ public class SourceManager {
                     deleteUnknown(f, cur);
                 } else {
                     if (!configFiles.containsKey(cur) && !soundFiles.containsKey(cur)) {
-                        
                         f.delete();
                     }
                 }
@@ -147,7 +146,7 @@ public class SourceManager {
         int started = 0;
         for (Map.Entry<String, RemoteFile> entry : configFiles.entrySet()) {
             RemoteFile file = entry.getValue();
-            if (!file.file.exists() || readHash(file.file) != file.hash) {
+            if (!file.file.exists() || !file.upToDate || readHash(file.file) != file.hash) {
                 util.getRemoteFile(
                         "src/" + entry.getKey().substring(1),
                         (got) -> {
@@ -178,10 +177,13 @@ public class SourceManager {
 
         public long hash;
 
-        public RemoteFile(Sources sources, File file, long hash) {
+        public boolean upToDate;
+
+        public RemoteFile(Sources sources, File file, long hash, boolean upToDate) {
             this.sources = sources;
             this.file = file;
             this.hash = hash;
+            this.upToDate = upToDate;
         }
     }
 
@@ -251,13 +253,15 @@ public class SourceManager {
                             configFiles.put(path, new RemoteFile(
                                     sources,
                                     fl,
-                                    hash
+                                    hash,
+                                    true
                             ));
                         } else {
                             soundFiles.put(path, new RemoteFile(
                                     sources,
                                     fl,
-                                    hash
+                                    hash,
+                                    true
                             ));
                         }
                     }
@@ -338,13 +342,15 @@ public class SourceManager {
                                         configFiles.put(path, new RemoteFile(
                                                 sources,
                                                 fl,
-                                                hash
+                                                hash,
+                                                false
                                         ));
                                     } else {
                                         soundFiles.put(path, new RemoteFile(
                                                 sources,
                                                 fl,
-                                                hash
+                                                hash,
+                                                false
                                         ));
                                     }
                                 }
