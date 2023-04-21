@@ -54,7 +54,6 @@ public class InitTest {
         SoundManager.instance.start();
 
         while (SoundManager.instance.getProgress() < 1.0) {
-            System.out.println(SoundManager.instance.getProgress());
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

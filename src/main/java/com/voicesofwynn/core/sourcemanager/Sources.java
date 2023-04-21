@@ -1,7 +1,5 @@
 package com.voicesofwynn.core.sourcemanager;
 
-import java.util.Arrays;
-
 public class Sources {
     private final String[] sources;
 
@@ -11,7 +9,6 @@ public class Sources {
                 sources[i] += "/";
             }
         }
-        System.out.println(Arrays.toString(sources));
         this.sources = sources;
     }
 
