@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface IFunctionProvider {
 
-    public void playFileSound(File file);
+    void playFileSound(File file);
     VOWLocation getNpcLocationFromName(String name);
 
     VOWLocation getPlayerLocation();
