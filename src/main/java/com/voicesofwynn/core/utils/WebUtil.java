@@ -118,6 +118,7 @@ public class WebUtil {
     }
 
     public void getRemoteFile(String path, remoteFileGot rfg, Sources sources) {
+        System.out.println(sources.getSources()[0] + path);
         es.submit(
                 () -> {
                     try {

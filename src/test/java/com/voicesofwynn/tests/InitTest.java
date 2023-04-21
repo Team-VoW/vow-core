@@ -3,6 +3,8 @@ package com.voicesofwynn.tests;
 import com.voicesofwynn.TestSettings;
 import com.voicesofwynn.core.VOWCore;
 import com.voicesofwynn.core.interfaces.IFunctionProvider;
+import com.voicesofwynn.core.soundmanager.DefaultSoundManager;
+import com.voicesofwynn.core.soundmanager.SoundManager;
 import com.voicesofwynn.core.sourcemanager.SourceManager;
 import com.voicesofwynn.core.wrappers.VOWLocation;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,11 @@ public class InitTest {
     @Test
     void init() {
         VOWCore.init(new IFunctionProvider() {
+            @Override
+            public void playFileSound(File file) {
+
+            }
+
             @Override
             public VOWLocation getNpcLocationFromName(String name) {
                 return null;
@@ -37,11 +44,22 @@ public class InitTest {
 
         SourceManager.getInstance().update();
 
+        while (!VOWCore.isWorking()) {
+
+        }
+
         SourceManager.getInstance().reload();
 
+        SoundManager.instance = new DefaultSoundManager();
+        SoundManager.instance.start();
 
-        while (!VOWCore.isWorking()) {
-            System.out.println(!VOWCore.isWorking());
+        while (SoundManager.instance.getProgress() < 1.0) {
+            System.out.println(SoundManager.instance.getProgress());
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
