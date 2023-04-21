@@ -15,14 +15,14 @@ public class FileLocationSubType {
         if (part == null) {
             throw new RuntimeException("In file " + values.filePath + " there is a missing file for " + context);
         }
-
         if (part instanceof String) {
-            if (!new File(values.baseSoundDirectory, (String)part).isFile()) {
+            File file = new File(values.baseSoundDirectory, (String)part);
+            if (!file.isFile()) {
                 throw new RuntimeException("In file " + values.filePath + " the file for " + context + " is set to a non-existent file " + part);
             }
 
             out.write(0);
-            out.write(ByteUtils.encodeString((String) part));
+            out.write(ByteUtils.encodeString(values.rootDir.toURI().relativize(file.toURI()).getPath()));
         } else {
 
             out.write(255);

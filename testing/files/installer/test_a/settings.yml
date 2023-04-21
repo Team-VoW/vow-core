@@ -1,0 +1,2 @@
+in: "src/"
+out: "../../../tests/generator/test_a"

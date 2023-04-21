@@ -22,7 +22,7 @@ public class DialogTypeTest {
         File testOut = new File(TestSettings.TEST_DIR, "loadManager/type/dialogTests/test_a");
 
         loadManager.build(new File("files/loadmanager/individual/dialog_tests/test_a.yml"),
-                testOut);
+                testOut, new File("files/loadmanager/individual/dialog_tests/"));
 
         LoadManager.getInstance().load(testOut);
 

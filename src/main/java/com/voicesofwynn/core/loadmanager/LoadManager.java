@@ -25,7 +25,7 @@ public class LoadManager {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void build(File in, File out) throws IOException {
+    public void build(File in, File out, File root) throws IOException {
         Yaml yaml = new Yaml();
         Map<String, Object> fl = yaml.load(Files.newInputStream(in.toPath()));
         if (out.exists()) {
@@ -39,6 +39,7 @@ public class LoadManager {
         values.filePath = in.getPath();
         values.file = in;
         values.baseSoundDirectory = in.getParentFile();
+        values.rootDir = root;
 
         for (Map.Entry<String, Object> entry : fl.entrySet()) {
             RegisterType type = register.get(entry.getKey());

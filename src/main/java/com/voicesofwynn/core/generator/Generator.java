@@ -63,10 +63,10 @@ public class Generator {
             File file = new File(baseInForFile, filePath);
 
             if (file.isDirectory()) {
-                buildDir(file, new File(baseOutForFile, filePath));
+                buildDir(file, new File(baseOutForFile, filePath), baseInForFile);
             } else if (file.exists()) {
                 loadManager.build(file,
-                        new File(baseOutForFile, filePath.replace(".yml", "")));
+                        new File(baseOutForFile, filePath.replace(".yml", "")), baseInForFile);
             } else {
                 VOWLog.warn("File " + filePath + " not found");
             }
@@ -112,13 +112,13 @@ public class Generator {
         return crc.getValue();
     }
 
-    public static void buildDir(File folder, File outBase) throws IOException {
+    public static void buildDir(File folder, File outBase, File rootIn) throws IOException {
         for (File file : Objects.requireNonNull(folder.listFiles())) {
             if (file.isDirectory()) {
-                buildDir(file, new File(outBase, file.getName()));
+                buildDir(file, new File(outBase, file.getName()), rootIn);
             } else if (file.exists() && file.getName().endsWith(".yml")) {
                 LoadManager.getInstance().build(file,
-                        new File(outBase, file.getName().replace(".yml", ".vow-config")));
+                        new File(outBase, file.getName().replace(".yml", ".vow-config")), rootIn);
             } else {
                 File out = new File(outBase, file.getName());
                 out.getParentFile().mkdirs();
