@@ -3,6 +3,7 @@ package com.voicesofwynn.core.soundmanager;
 import com.voicesofwynn.core.VOWCore;
 import com.voicesofwynn.core.sourcemanager.SourceManager;
 import com.voicesofwynn.core.utils.WebUtil;
+import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -17,7 +18,18 @@ public class DefaultSoundManager extends SoundManager {
     private volatile ConcurrentMap<String, SourceManager.RemoteFile> files = new ConcurrentHashMap<>();
     private AtomicReference<String> last = new AtomicReference<>();
 
-    private ConcurrentSkipListSet<String> toPlay = new ConcurrentSkipListSet<>();
+    private ConcurrentSkipListSet<PlayEventBasically> toPlay = new ConcurrentSkipListSet<>();
+
+    public class PlayEventBasically {
+        public String id;
+        public VOWLocationProvider location;
+
+
+        public PlayEventBasically(String id, VOWLocationProvider location) {
+            this.id = id;
+            this.location = location;
+        }
+    }
 
     private Thread thread;
 
@@ -37,16 +49,16 @@ public class DefaultSoundManager extends SoundManager {
             }
 
             while (sm.soundFiles.size() > 0) {
-                for (String code : toPlay) {
-                    SourceManager.RemoteFile rFile = sm.soundFiles.get(code);
+                for (PlayEventBasically code : toPlay) {
+                    SourceManager.RemoteFile rFile = sm.soundFiles.get(code.id);
                     if (rFile != null) {
                         try {
                             rFile.file.getParentFile().mkdirs();
-                            InputStream s = WebUtil.getHttpStream("src/" + code.substring(1), rFile.sources);
+                            InputStream s = WebUtil.getHttpStream("src" + code, rFile.sources);
                             Files.copy(s, rFile.file.toPath());
-                            files.put(code, rFile);
-                            sm.soundFiles.remove(code);
-                            VOWCore.getFunctionProvider().playFileSound(rFile.file);
+                            files.put(code.id, rFile);
+                            sm.soundFiles.remove(code.id);
+                            VOWCore.getFunctionProvider().playFileSound(rFile.file, code.location);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -117,7 +129,7 @@ public class DefaultSoundManager extends SoundManager {
     }
 
     @Override
-    public void playSound(String name) {
+    public void playSound(String name, VOWLocationProvider location) {
         last.set(name);
 
     }
