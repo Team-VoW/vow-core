@@ -141,6 +141,52 @@ public class SourceManager {
         }
     }
 
+    public Map<String, Object> obtainTree(String nameOfSource) {
+        Sources src = new Sources(sources.get(nameOfSource));
+        ConcurrentMap<String, Object> map = new ConcurrentHashMap<>();
+        WebUtil util = new WebUtil();
+        leftToTreeWalk = new AtomicInteger();
+
+        obtainTreeWalk(src, "", util, map);
+
+        while (leftToTreeWalk.get() > 0) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return map;
+    }
+
+    private AtomicInteger leftToTreeWalk = new AtomicInteger();
+
+    public void obtainTreeWalk(Sources sources, String path, WebUtil util, ConcurrentMap<String, Object> map) {
+        leftToTreeWalk.addAndGet(1);
+        util.getRemoteFile(
+                "lists/base" + path,
+                (got) -> {try {
+                    while (got.read(new byte[0]) != -1) {
+                        String name = ByteUtils.readString(got);
+                        byte type = ByteUtils.readByte(got);
+                        long hash = ByteUtils.readLong(got);
+                        if (type == 0) {
+                            map.put(name, hash);
+                        } else {
+                            ConcurrentMap<String, Object> child = new ConcurrentHashMap<>();
+                            map.put(name, child);
+                            obtainTreeWalk(sources, path + "$" + name, util, child);
+                        }
+                    }
+                    leftToTreeWalk.addAndGet(-1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }},
+                sources
+        );
+    }
+
     public void downloadConfigs() {
         WebUtil util = new WebUtil();
         int started = 0;

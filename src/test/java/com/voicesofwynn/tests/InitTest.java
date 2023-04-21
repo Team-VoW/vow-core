@@ -61,5 +61,8 @@ public class InitTest {
             }
         }
 
+        Map<String, Object> tree = SourceManager.instance.obtainTree("main");
+        System.out.println(tree);
+
     }
 }
