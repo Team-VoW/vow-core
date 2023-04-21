@@ -79,6 +79,9 @@ public class DefaultSoundManager extends SoundManager {
                             amount += 1;
                         }
                     }
+                    if (amount < 6) {
+                        this.last.set(null);
+                    }
                 } else {
                     for (Map.Entry<String, SourceManager.RemoteFile> file : sm.soundFiles.entrySet()) {
                         if (amount > 6) {
@@ -116,6 +119,7 @@ public class DefaultSoundManager extends SoundManager {
     @Override
     public void playSound(String name) {
         last.set(name);
+
     }
 
 
