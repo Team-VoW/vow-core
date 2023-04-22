@@ -8,25 +8,25 @@ package com.voicesofwynn.core.events;
  *
  * */
 
-//TODO: @null: make the changes you discussed with Flora in a VC 22/04/23
+import com.voicesofwynn.core.VOWCore;
 
 import java.util.ArrayList;
 
 public class ChatMessageEvent {
 
-    private static ArrayList<messageListener> listeners = new ArrayList<>();
+    private static final ArrayList<messageListener> listeners = new ArrayList<>();
 
     public static void message(String str) {
+        if (!VOWCore.isWorking()) {
+            return;
+        }
+
         for (messageListener listener : listeners) {
             listener.message(str);
         }
     }
 
     public static void register(messageListener listener) {
-        if (listeners == null) {
-            listeners = new ArrayList<>();
-        }
-
         listeners.add(listener);
     }
 
