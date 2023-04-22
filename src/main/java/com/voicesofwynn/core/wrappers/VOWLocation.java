@@ -1,5 +1,9 @@
 package com.voicesofwynn.core.wrappers;
 
+/**
+ * Gets the location of the sounds (Wrapper for the MC location class)
+ */
+
 public class VOWLocation {
     public double x;
     public double y;

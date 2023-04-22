@@ -7,6 +7,10 @@ import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Register of WynnCraft Dialogues
+ */
+
 public class DialogueRegister implements ChatMessageEvent.messageListener {
 
     public static class Dialog {

@@ -1,5 +1,10 @@
 package com.voicesofwynn.core.sourcemanager;
 
+/**
+ * Functions used in the SourceManager class.
+ * Makes Sources threadsafe
+ */
+
 public class Sources {
     private final String[] sources;
 

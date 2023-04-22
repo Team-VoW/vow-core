@@ -13,7 +13,9 @@ import java.util.ConcurrentModificationException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-
+/**
+ * Handles creating the connection to the webserver to download the voice files & cosmetics (soon TM)
+ */
 public class WebUtil {
 
     public static final int THREAD_AMOUNT = 8;
@@ -22,7 +24,6 @@ public class WebUtil {
     public WebUtil() {
         es = (ThreadPoolExecutor) Executors.newFixedThreadPool(THREAD_AMOUNT);
     }
-
 
     public static byte[] readAllBytes(InputStream inputStream) throws IOException {
         final int bufLen = 1024;
@@ -50,7 +51,7 @@ public class WebUtil {
         }
     }
 
-    public static InputStream getHttpStream(String address, Sources sources) throws IOException {
+    public static InputStream getHttpsStream(String address, Sources sources) throws IOException {
         address = address.replace(" ", "%20"); //Replace spaces in the filename
         InputStream stream = null;
         try {
@@ -62,7 +63,6 @@ public class WebUtil {
                     HttpsURLConnection con = null;
 
                     con = (HttpsURLConnection) url.openConnection();
-                    
 
                     con.setConnectTimeout(20000);
                     
@@ -73,8 +73,6 @@ public class WebUtil {
                         con = (HttpsURLConnection) new URL(redirect).openConnection();
                         con.setConnectTimeout(2000);
                     }
-
-                    
 
                     String re = con.getResponseMessage();
                     if (re.equals("OK")) {
@@ -94,7 +92,7 @@ public class WebUtil {
             }
         } catch (ConcurrentModificationException e) {
             e.printStackTrace();
-            stream = getHttpStream(address, sources);
+            stream = getHttpsStream(address, sources);
         }
 
         return stream;
@@ -121,7 +119,7 @@ public class WebUtil {
         es.submit(
                 () -> {
                     try {
-                        InputStream s = getHttpStream(path, sources);
+                        InputStream s = getHttpsStream(path, sources);
                         rfg.run(s);
                     } catch (Exception e) {
                         rfg.run(null);

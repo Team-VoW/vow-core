@@ -7,6 +7,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This interface is used to play the sound files
+ */
+
 public interface IFunctionProvider {
 
     /**

@@ -15,7 +15,7 @@ public interface RegisterType {
     void write(FileOutputStream writer, Object section, WriteInstanceValues instance) throws IOException;
 
     /**
-     * @return true if the type is write time only
+     * @return true if the type is 'write time only'
      */
     boolean isWriteTimeOnly();
 

@@ -16,14 +16,13 @@ import java.util.zip.CRC32;
 public class Generator {
 
     public static void main(String[] args) {
-
+        //TODO: Make VOW also act as an executable for it's sources.
     }
-
     /**
      * The generate function
      * <br><br>
-     * Will generate output in the out folder which can be used as a preset source. <p>
-     * Requires presets.yml in the in folder.
+     * Will generate output in the 'out folder' which can be used as a preset source. <p>
+     * Requires 'presets.yml' in the in folder.
      *
      * @param base base project folder
      * @param in the files/folders to generate (if non, then it will just generate everything) <br>
@@ -135,8 +134,4 @@ public class Generator {
         }
         dir.delete();
     }
-
-
-
-
 }

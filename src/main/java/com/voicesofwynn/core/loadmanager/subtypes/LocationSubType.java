@@ -13,6 +13,9 @@ import java.util.*;
 
 public class LocationSubType {
 
+    /**
+     * This code is only ran during compilation, and is not ran when starting the game.
+     */
     public static void writeLocation(FileOutputStream out, Object part, String context) throws IOException {
         if (part instanceof String) {
             String loc = (String)part;
@@ -20,7 +23,7 @@ public class LocationSubType {
             if (loc.equals("player")) {
                 out.write(2);
             } else {
-                String[] pos = loc.split("[ ,|/\\\\]"); // yes regex
+                String[] pos = loc.split("[ ,|/\\\\]"); // Regex to slip the coordinates into an array list (example: 0, 76, 250 => [0, 76, 250])
 
                 List<Float> coordinates = new ArrayList<>();
                 for (String s : pos) {
@@ -106,11 +109,8 @@ public class LocationSubType {
             case 1:
                 String name = ByteUtils.readString(in);
                 return () -> VOWCore.getFunctionProvider().getNpcLocationFromName(name);
-            case 2:
+            default:
                 return () -> VOWCore.getFunctionProvider().getPlayerLocation();
         }
-
-        return null;
     }
-
 }

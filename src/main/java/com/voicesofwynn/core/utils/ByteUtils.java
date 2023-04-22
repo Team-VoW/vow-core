@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
- * If data isn't correct the result will not be correct either
+ * Utils to handle Byte type
  */
 public class ByteUtils {
 

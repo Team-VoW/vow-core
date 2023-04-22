@@ -16,12 +16,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class DefaultSoundManager extends SoundManager {
 
-    private volatile ConcurrentMap<String, SourceManager.RemoteFile> files = new ConcurrentHashMap<>();
-    private AtomicReference<String> last = new AtomicReference<>();
+    private final ConcurrentMap<String, SourceManager.RemoteFile> files = new ConcurrentHashMap<>();
+    private final AtomicReference<String> last = new AtomicReference<>();
 
-    private ConcurrentSkipListSet<PlayEventBasically> toPlay = new ConcurrentSkipListSet<>();
+    private final ConcurrentSkipListSet<PlayEventBasically> toPlay = new ConcurrentSkipListSet<>();
 
-    public class PlayEventBasically {
+    public static class PlayEventBasically {
         public String id;
         public VOWLocationProvider location;
 
@@ -55,7 +55,7 @@ public class DefaultSoundManager extends SoundManager {
                     if (rFile != null) {
                         try {
                             rFile.file.getParentFile().mkdirs();
-                            InputStream s = WebUtil.getHttpStream("src" + code, rFile.sources);
+                            InputStream s = WebUtil.getHttpsStream("src" + code, rFile.sources);
                             Files.copy(s, rFile.file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                             files.put(code.id, rFile);
                             sm.soundFiles.remove(code.id);

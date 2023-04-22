@@ -9,6 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/***
+ *
+ */
 public class FileLocationSubType {
 
     public static void writeFileLocation(FileOutputStream out, Object part, WriteInstanceValues values, String context) throws IOException {
@@ -33,12 +36,10 @@ public class FileLocationSubType {
 
         // https://github.com/Team-VoW/vow-core/wiki/Types-in-code#file
         switch (ByteUtils.readByte(in)) {
-            case 0:
+            default:
                 String path = ByteUtils.readString(in);
                 return () -> path;
+
         }
-
-        return null;
     }
-
 }

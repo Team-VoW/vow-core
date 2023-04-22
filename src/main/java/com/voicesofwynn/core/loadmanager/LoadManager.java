@@ -12,6 +12,10 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is responsible for building and locating files that are used by the VoicesOfWynn mod.
+ */
+
 public class LoadManager {
 
     private static LoadManager instance;

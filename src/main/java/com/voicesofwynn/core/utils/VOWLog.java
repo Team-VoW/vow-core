@@ -20,7 +20,7 @@ public class VOWLog {
         System.out.println("[ERROR] " + str);
     }
 
-
+    public void locDebug(String str) { System.out.println("[DEBUG] " + str); }
 
     public static void log(String str) {
         instance.locLog(str);
@@ -34,5 +34,6 @@ public class VOWLog {
         instance.locError(str);
     }
 
+    public static void debug(String str) { instance.locDebug(str); }
 
 }

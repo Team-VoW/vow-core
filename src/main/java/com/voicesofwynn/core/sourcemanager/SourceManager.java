@@ -20,6 +20,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
 
+/**
+ * Handles downloading sound files, along with cleaning up already played sounds
+ */
+
 public class SourceManager {
 
     private File base;
