@@ -7,6 +7,7 @@ import com.voicesofwynn.core.soundmanager.DefaultSoundManager;
 import com.voicesofwynn.core.soundmanager.SoundManager;
 import com.voicesofwynn.core.sourcemanager.SourceManager;
 import com.voicesofwynn.core.wrappers.VOWLocation;
+import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -17,8 +18,9 @@ public class InitTest {
     @Test
     void init() {
         VOWCore.init(new IFunctionProvider() {
+
             @Override
-            public void playFileSound(File file) {
+            public void playFileSound(File file, VOWLocationProvider location) {
 
             }
 
