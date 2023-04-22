@@ -7,6 +7,7 @@ import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -55,7 +56,7 @@ public class DefaultSoundManager extends SoundManager {
                         try {
                             rFile.file.getParentFile().mkdirs();
                             InputStream s = WebUtil.getHttpStream("src" + code, rFile.sources);
-                            Files.copy(s, rFile.file.toPath());
+                            Files.copy(s, rFile.file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                             files.put(code.id, rFile);
                             sm.soundFiles.remove(code.id);
                             VOWCore.getFunctionProvider().playFileSound(rFile.file, code.location);
@@ -79,7 +80,7 @@ public class DefaultSoundManager extends SoundManager {
                                     (got) -> {
                                         file.getValue().file.getParentFile().mkdirs();
                                         try {
-                                            Files.copy(got, file.getValue().file.toPath());
+                                            Files.copy(got, file.getValue().file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -131,7 +132,12 @@ public class DefaultSoundManager extends SoundManager {
     @Override
     public void playSound(String name, VOWLocationProvider location) {
         last.set(name);
-
+        SourceManager.RemoteFile file = files.get(name);
+        if (file == null) {
+            toPlay.add(new PlayEventBasically(name, location));
+        } else {
+            VOWCore.getFunctionProvider().playFileSound(file.file, location);
+        }
     }
 
 
