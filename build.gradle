@@ -10,22 +10,11 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    includeInJar.extendsFrom implementation
-}
-
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     implementation 'org.yaml:snakeyaml:2.0'
-    includeInJar 'org.yaml:snakeyaml:2.0'
-}
-
-jar {
-    from {
-        configurations.includeInJar.collect { it.name.contains("META-INF") ? null : it.isDirectory() ? it : zipTree(it) }
-    }
 }
 
 project.publishing {
