@@ -1,11 +1,20 @@
 package com.voicesofwynn.core.events;
 
+/*
+ * Purpose of this class: Decreases the amount of useless event listeners in the rest of the code.
+ * What this class does : Allows you to register listeners for messages
+ *
+ * Mods using the VOW Core mod, must use this class to process any messages received by the player (Chat Message Processing)
+ *
+ * */
+
+//TODO: @null: make the changes you discussed with Flora in a VC 22/04/23
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChatMessageEvent {
 
-    private static List<messageListener> listeners;
+    private static ArrayList<messageListener> listeners = new ArrayList<>();
 
     public static void message(String str) {
         for (messageListener listener : listeners) {
