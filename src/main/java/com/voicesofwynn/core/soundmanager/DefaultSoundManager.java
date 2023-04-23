@@ -3,7 +3,7 @@ package com.voicesofwynn.core.soundmanager;
 import com.voicesofwynn.core.VOWCore;
 import com.voicesofwynn.core.sourcemanager.SourceManager;
 import com.voicesofwynn.core.utils.WebUtil;
-import com.voicesofwynn.core.wrappers.VOWLocationProvider;
+import com.voicesofwynn.core.wrappers.PlayEvent;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,12 +23,12 @@ public class DefaultSoundManager extends SoundManager {
 
     public static class PlayEventBasically {
         public String id;
-        public VOWLocationProvider location;
+        public PlayEvent event;
 
 
-        public PlayEventBasically(String id, VOWLocationProvider location) {
+        public PlayEventBasically(String id, PlayEvent event) {
             this.id = id;
-            this.location = location;
+            this.event = event;
         }
     }
 
@@ -59,7 +59,7 @@ public class DefaultSoundManager extends SoundManager {
                             Files.copy(s, rFile.file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                             files.put(code.id, rFile);
                             sm.soundFiles.remove(code.id);
-                            VOWCore.getFunctionProvider().playFileSound(rFile.file, code.location);
+                            VOWCore.getFunctionProvider().playFileSound(rFile.file, code.event);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -130,13 +130,13 @@ public class DefaultSoundManager extends SoundManager {
     }
 
     @Override
-    public void playSound(String name, VOWLocationProvider location) {
+    public void playSound(String name, PlayEvent event) {
         last.set(name);
         SourceManager.RemoteFile file = files.get(name);
         if (file == null) {
-            toPlay.add(new PlayEventBasically(name, location));
+            toPlay.add(new PlayEventBasically(name, event));
         } else {
-            VOWCore.getFunctionProvider().playFileSound(file.file, location);
+            VOWCore.getFunctionProvider().playFileSound(file.file, event);
         }
     }
 

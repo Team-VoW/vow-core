@@ -1,15 +1,14 @@
 package com.voicesofwynn.testing;
 
 import com.voicesofwynn.core.interfaces.IFunctionProvider;
+import com.voicesofwynn.core.wrappers.PlayEvent;
 import com.voicesofwynn.core.wrappers.VOWLocation;
-import com.voicesofwynn.core.wrappers.VOWLocationProvider;
 
 import java.io.File;
 
 public class EmptyFunctionProvider implements IFunctionProvider {
-
     @Override
-    public void playFileSound(File file, VOWLocationProvider location) {
+    public void playFileSound(File file, PlayEvent event) {
 
     }
 

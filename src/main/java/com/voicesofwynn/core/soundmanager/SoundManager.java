@@ -1,6 +1,6 @@
 package com.voicesofwynn.core.soundmanager;
 
-import com.voicesofwynn.core.wrappers.VOWLocationProvider;
+import com.voicesofwynn.core.wrappers.PlayEvent;
 
 public abstract class SoundManager {
 
@@ -11,7 +11,7 @@ public abstract class SoundManager {
 
     public abstract void start();
 
-    public abstract void playSound(String name, VOWLocationProvider location);
+    public abstract void playSound(String name, PlayEvent event);
 
     /**
      * @return 0-1 float with progress
