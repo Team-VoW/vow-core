@@ -40,6 +40,10 @@ public class DialogueType implements RegisterType {
             dialog.file = FileLocationSubType.readFileLocation(in);
             dialog.line = text;
             dialog.location = LocationSubType.readLocation(in);
+            byte enabled = ByteUtils.readByte(in);
+            if ((enabled & 0b0000001) == 0b0000001) {
+                dialog.fallOff = ByteUtils.readFloat(in);
+            }
 
             register.register(dialog);
         }
@@ -65,6 +69,7 @@ public class DialogueType implements RegisterType {
                     FileLocationSubType.writeFileLocation(out, dialog.getValue(), value, (String) dialog.getKey());
                     String npcName = LineUtils.npcNameFromLine((String)dialog.getKey());
                     LocationSubType.writeNpcNameLocation(out, npcName);
+                    out.write(0);
                 } else if (dialog.getValue() instanceof Map) {
                     Set<String> used = new HashSet<>();
                     Map<?, ?> parameters = (Map<?, ?>)dialog.getValue();
@@ -80,6 +85,21 @@ public class DialogueType implements RegisterType {
                         LocationSubType.writeLocation(out, location, "file " + value.filePath + " dialogue " + dialog.getKey());
                     }
                     used.add("location");
+
+                    byte opt = 0;
+                    Object fallOff = parameters.get("fallOff");
+                    if (fallOff != null) {
+                        opt |= 0b00000001; // bitwise time
+                        used.add("fallOff");
+                    }
+                    out.write(opt);
+                    if (fallOff != null) {
+                        try {
+                            out.write(ByteUtils.encodeFloat(Float.parseFloat(fallOff.toString())));
+                        } catch (NumberFormatException e) {
+                            throw new RuntimeException("In file " + value.file + " the dialogue " + dialog.getKey() + " has fallOff which isn't a number");
+                        }
+                    }
 
                     for (Object key : parameters.keySet()) {
                         if (!(key instanceof String)) {

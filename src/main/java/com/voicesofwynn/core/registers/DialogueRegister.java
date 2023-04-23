@@ -18,6 +18,7 @@ public class DialogueRegister implements ChatMessageEvent.messageListener {
         public VOWLocationProvider location;
 
         public FilePathProvider file;
+        public float fallOff;
     }
 
     public static DialogueRegister instance;

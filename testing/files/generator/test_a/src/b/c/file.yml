@@ -13,6 +13,7 @@ dialogue:
       npc: "Bob The Soldier"
   "[2/4] Soldier: There's a bit of trouble up ahead. You can't expect to get out of here alive if you aren't prepared.":
     file: "empty_file.ogg"
+    fallOff: 40
     location:
       x: 10.0
       y: -10.0
