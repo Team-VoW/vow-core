@@ -9,14 +9,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.zip.CRC32;
 
 public class Generator {
 
-    public static void main(String[] args) {
-        //TODO: Make VOW also act as an executable for it's sources.
+    public static void main(String[] args) throws IOException {
+        File file = new File(args[0] != null ? args[0] : ".");
+        generate(file, Arrays.copyOfRange(args, 1, args.length));
     }
     /**
      * The generate function
