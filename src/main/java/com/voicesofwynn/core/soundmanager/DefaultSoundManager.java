@@ -8,10 +8,11 @@ import com.voicesofwynn.core.wrappers.PlayEvent;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class DefaultSoundManager extends SoundManager {
@@ -19,7 +20,7 @@ public class DefaultSoundManager extends SoundManager {
     private final ConcurrentMap<String, SourceManager.RemoteFile> files = new ConcurrentHashMap<>();
     private final AtomicReference<String> last = new AtomicReference<>();
 
-    private final ConcurrentSkipListSet<PlayEventBasically> toPlay = new ConcurrentSkipListSet<>();
+    private final Set<PlayEventBasically> toPlay = new HashSet<>();
 
     public static class PlayEventBasically {
         public String id;
