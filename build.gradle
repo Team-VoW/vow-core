@@ -10,6 +10,13 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes("Implementation-Version": "1.0",
+                "Main-Class": "com.voicesofwynn.core.generator.Generator")
+    }
+}
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'

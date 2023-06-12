@@ -17,8 +17,8 @@ import java.util.zip.CRC32;
 public class Generator {
 
     public static void main(String[] args) throws IOException {
-        File file = new File(args[0] != null ? args[0] : ".");
-        generate(file, Arrays.copyOfRange(args, 1, args.length));
+        File file = new File(args.length > 0 ? args[0] : ".");
+        generate(file, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[] {});
     }
     /**
      * The generate function
