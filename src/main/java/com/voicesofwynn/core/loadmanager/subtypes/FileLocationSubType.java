@@ -2,6 +2,7 @@ package com.voicesofwynn.core.loadmanager.subtypes;
 
 import com.voicesofwynn.core.loadmanager.WriteInstanceValues;
 import com.voicesofwynn.core.utils.ByteUtils;
+import com.voicesofwynn.core.utils.VOWLog;
 import com.voicesofwynn.core.wrappers.FilePathProvider;
 
 import java.io.File;
@@ -20,8 +21,11 @@ public class FileLocationSubType {
         }
         if (part instanceof String) {
             File file = new File(values.baseSoundDirectory, (String)part);
-            if (!file.isFile()) {
+            if (!file.isFile() && !part.equals("TODO")) {
                 throw new RuntimeException("In file " + values.filePath + " the file for " + context + " is set to a non-existent file " + part);
+            }
+            if (part.equals("TODO")) {
+                VOWLog.warn("TODO set in file "  + values.filePath + " the file for " + context);
             }
 
             out.write(0);
