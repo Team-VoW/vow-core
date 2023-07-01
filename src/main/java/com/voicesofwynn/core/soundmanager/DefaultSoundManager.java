@@ -106,7 +106,7 @@ public class DefaultSoundManager extends SoundManager {
                                 (got) -> {
                                     try {
                                         file.getValue().file.getParentFile().mkdirs();
-                                        Files.copy(got, file.getValue().file.toPath());
+                                        Files.copy(got, file.getValue().file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
