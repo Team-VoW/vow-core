@@ -110,7 +110,7 @@ public class SourceManager {
                 deleteUnknown(new File(root, "files"), "");
             }
             int ifYouDeleteThisIntItWillAllBreak = 0;
-            this.downloadConfigs();
+            this.downloadConfigsFunction();
 
         }
         VOWCore.isWorking = true;
@@ -192,9 +192,10 @@ public class SourceManager {
         );
     }
 
-    public void downloadConfigs() {
+    public void downloadConfigsFunction() {
         WebUtil util = new WebUtil();
         int started = 0;
+
         for (Map.Entry<String, RemoteFile> entry : configFiles.entrySet()) {
             RemoteFile file = entry.getValue();
             if (!file.file.exists() || readHash(file.file) != file.hash) {
@@ -212,6 +213,7 @@ public class SourceManager {
                 started++;
             }
         }
+
         while (util.finished() < started) {
             try {
                 Thread.sleep(100);
@@ -402,7 +404,7 @@ public class SourceManager {
                         got.close();
                     } catch (Exception e) {
                         e.printStackTrace();
-                        VOWLog.log("Failed to download " + "lists/" + currentPath);
+                        VOWLog.log("Failed to download " + "lists/base" + currentPath.replaceAll("/", "\\$"));
                     }
 
                     doneTreeWalk.addAndGet(1);
