@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'application'
 }
 
 group 'com.voicesofwynn'
@@ -11,10 +10,6 @@ repositories {
     mavenCentral()
 }
 
-application {
-    mainClass = 'com.voicesofwynn.core.generator.Generator'
-}
-
 jar {
     manifest {
         attributes("Implementation-Version": "1.0",
@@ -22,11 +17,25 @@ jar {
     }
 }
 
+configurations {
+    includeInJar.extendsFrom implementation
+}
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     implementation 'org.yaml:snakeyaml:2.0'
+//    includeInJar "org.yaml:snakeyaml:2.0" // uncomment when building jar
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
+    from {
+        configurations.includeInJar.collect { it.name.contains("META-INF") ? null : it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 project.publishing {

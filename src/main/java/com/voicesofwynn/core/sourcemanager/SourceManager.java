@@ -106,11 +106,10 @@ public class SourceManager {
                 }
             }
 
+            this.downloadConfigsFunction();
             if (Options.deleteUnneededFiles) {
                 deleteUnknown(new File(root, "files"), "");
             }
-            int ifYouDeleteThisIntItWillAllBreak = 0;
-            this.downloadConfigsFunction();
 
         }
         VOWCore.isWorking = true;

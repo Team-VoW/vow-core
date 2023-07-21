@@ -60,7 +60,7 @@ public class WebUtil {
                 try {
                     URL url = new URL(source + address);
                     
-                    HttpsURLConnection con = null;
+                    HttpsURLConnection con;
 
                     con = (HttpsURLConnection) url.openConnection();
 
